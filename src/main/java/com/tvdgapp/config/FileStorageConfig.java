@@ -1,2 +1,4 @@
-package com.tvdgapp.config;public class FileStorageConfig {
+package com.tvdgapp.config;
+
+public class FileStorageConfig {
 }

@@ -1,2 +1,4 @@
-package com.tvdgapp.repositories;public interface ClientUser {
+package com.tvdgapp.repositories.User;
+
+public interface ClientUser {
 }

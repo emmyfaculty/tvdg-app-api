@@ -1,0 +1,6 @@
+package com.tvdgapp.exceptions;
+
+public enum EntityType {
+    ADMIN_USER,COUNTRY_CODE,INDUSTRY,SHIPMENT,PACKAGE,SUBSCRIPTION,ROLE,CUSTOMER_USER, AFFILIATE_USER, RIDER_USER,
+    USER
+}

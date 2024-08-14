@@ -1,0 +1,16 @@
+{
+  "firstName": "Johnson",
+  "lastName": "Doe",
+  "email": "johnson.doe@example.com",
+  "phone": "132-456-7890",
+  "username": "emmydoe",
+  "streetAddress": "32B Ladipo Kasumu street, Ikeja",
+  "country": "Nigeria",
+  "identificationNumber": "A12345656",
+  "tittle": "MR.",
+  "gender": "Male",
+  "city": "Surulere",
+  "state": "Lagos",
+  "postalCode": "100001",
+  "dateOfBirth": "05/05/1995"
+}

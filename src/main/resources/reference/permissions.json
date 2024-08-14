@@ -1,0 +1,291 @@
+[
+  {
+    "permission": "customerShipmentManagement",
+    "name": "Manage Shipment by Customer",
+    "description": "can create,update,view,list and delete shipments",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "adminShipmentManagement",
+    "name": "Manage Shipment by Admin",
+    "description": "view all shipments, list by id, by userId, list by status,list and delete shipments",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "manageShippingService",
+    "name": "Manage Service Option",
+    "description": "can create,update,view, and delete Shipping Service",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Service Option"
+  },
+  {
+    "permission": "createShippingProfile",
+    "name": "Create Shipping Profile",
+    "description": "can create shipping profile",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Shipping Profile"
+  },
+  {
+    "permission": "manageShippingProfile",
+    "name": "fetch and list Shipping Profile by id",
+    "description": "can create shipping profile",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipping Profile"
+  },
+  {
+    "permission": "managePackageCategory",
+    "name": "Manage Package Category",
+    "description": "can create,update,view,list and delete Package Category",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Package Category"
+  },
+  {
+    "permission": "viewShipmentServiceOption",
+    "name": "Manage Service Option",
+    "description": "can view, and list Service Options",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Service Option"
+  },
+  {
+    "permission": "manageShipmentServiceOption",
+    "name": "Manage Service Option",
+    "description": "can can create, update, delete view, and list Service Options",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Service Option"
+  },
+  {
+    "permission": "viewShipment",
+    "name": "View Shipment",
+    "description": "can only view and list Shipments",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment "
+  },
+  {
+    "permission": "customerUserManagement",
+    "name": "Customer User Management",
+    "description": "can update,view,list and retrieve customer details,can also manage customer",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "manageCustomer",
+    "name": " Manage Customer",
+    "description": "can create,view,list and retrieve customer details,can also manage customer",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "viewCustomer",
+    "name": "View Customer details",
+    "description": "can only list and view customer, can also view customers",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "manageAdminUser",
+    "name": "Manage Admin User",
+    "description": "can create,update,view,list and activate/deactivate admin user account",
+    "permissionType": "ADMIN",
+    "permissionGroup": "User"
+  },
+  {
+    "permission": "manageAdmin",
+    "name": "Manage Admin User",
+    "description": "can update,view admin user account",
+    "permissionType": "ADMIN",
+    "permissionGroup": "User"
+  },
+  {
+    "permission": "viewAdminUser",
+    "name": "View Admin User",
+    "description": "can only view and list, and update admin users",
+    "permissionType": "ADMIN",
+    "permissionGroup": "User"
+  },
+  {
+    "permission": "manageRole",
+    "name": "Manage Role",
+    "description": "can create,update,view and delete role",
+    "permissionType": "ADMIN",
+    "permissionGroup": "User"
+  },
+  {
+    "permission": "viewRole",
+    "name": "View Role",
+    "description": "can only view and list roles",
+    "permissionType": "ADMIN",
+    "permissionGroup": "User"
+  },
+  {
+    "permission": "manageCoreConfiguration",
+    "name": "Manage Core Configurations",
+    "description": "can update system configuration",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Settings"
+  },
+  {
+    "permission": "manageAffiliate",
+    "name": "Manage Affiliate",
+    "description": "can create,update,view,list by id",
+    "permissionType": "AFFILIATE",
+    "permissionGroup": "Affiliate"
+  },
+  {
+    "permission": "affiliateUserManagement",
+    "name": "Affiliate User Management",
+    "description": "can only view and list all affiliates, approve affiliate, delete, activate and deactivate affiliates account",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Affiliate"
+  },
+  {
+    "permission": "manageCustomer",
+    "name": "Manage Customer",
+    "description": "can create,delete,view and list customer,can also upload bulk and download bulk customers",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "customerUserManagement",
+    "name": "Customer User Management",
+    "description": "can update,view and list customer, fetch user details",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "riderUserManagement",
+    "name": "Rider User Management",
+    "description": "can create,delete,view and list riders,can also upload bulk and download bulk riders",
+    "permissionType": "RIDER",
+    "permissionGroup": "Rider"
+  },
+  {
+    "permission": "manageRider",
+    "name": "Manage Rider",
+    "description": "can update,view and list rider, fetch user details",
+    "permissionType": "RIDER",
+    "permissionGroup": "Rider"
+  },
+  {
+    "permission": "viewCustomerProfile",
+    "name": "View Customer Profile",
+    "description": "can only view and list customers",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Customer"
+  },
+  {
+    "permission": "fundWallet",
+    "name": "Fund User Wallet",
+    "description": "can only fund wallet for customers",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Wallet"
+  },
+  {
+    "permission": "manageWallet",
+    "name": "Manage User Wallet",
+    "description": "can withdraw, check balance and make payment from wallet",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Wallet"
+  },
+  {
+    "permission": "assignShipment",
+    "name": "Manage Shipment Assignment",
+    "description": "can assign, update, list and delete shipment assignment to Riders.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "manageShipment",
+    "name": "Manage Shipment",
+    "description": "can create, update, view, list all shipment by userId and delete shipment.",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "viewShipment",
+    "name": "View Shipment",
+    "description": "can view, list all shipment and delete shipment.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "viewShipmentBYUser",
+    "name": "View Shipment by user",
+    "description": "can view, list all shipment by userId and delete shipment.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "adminShipmentManagement",
+    "name": "View Shipment and manage shipment activities",
+    "description": "can view, list all shipment by userId and delete shipment.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "manageShippingProfile",
+    "name": "View Shipment and manage shipment activities",
+    "description": "can create, update, view, list all shipment by userId and delete shipping profile.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "managePricingLevel",
+    "name": "manage pricing level",
+    "description": "can create, update, view, list all and delete pricing level.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  },
+  {
+    "permission": "manageShippingPrice",
+    "name": "manage shipping price",
+    "description": "can create, update, view, list all and delete pricing level.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipping Price"
+  },
+  {
+    "permission": "viewShippingPrice",
+    "name": "view shipping price",
+    "description": "view, list all pricing level.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipping Price"
+  },
+  {
+    "permission": "manageQuote",
+    "name": "can create, update, delete and view quote",
+    "description": "view, list all pricing level.",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "Quote"
+  },
+  {
+    "permission": "manageFileClaim",
+    "name": "Manage FileClaims",
+    "description": "can create, update, delete and view FileClaim.",
+    "permissionType": "CUSTOMER",
+    "permissionGroup": "FileClaims"
+  },
+  {
+    "permission": "managePickupLocation",
+    "name": "Manage Pickup Location",
+    "description": "can create, update, delete and view pick up location.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "PickupLocation"
+  },
+  {
+    "permission": "manageExpectedDeliveryDays",
+    "name": "Manage Expected Delivery Days",
+    "description": "can create, update, delete and view Expected Delivery days.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "ExpectedDeliveryDays"
+  },
+  {
+    "permission": "manageShipmentAssignment",
+    "name": "Manage Shipment Assignment",
+    "description": "can create, update, delete and view shipment assignment.",
+    "permissionType": "ADMIN",
+    "permissionGroup": "Shipment"
+  }
+]
+
+

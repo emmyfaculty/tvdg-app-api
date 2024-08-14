@@ -1,1 +1,122 @@
-spring.application.name=tvdg-app-api
+spring:
+  application:
+    name: tvdg-app-api
+
+---
+spring:
+  profiles:
+    active: ${SPRING_ACTIVE_PROFILE:dev}
+
+---
+spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 30
+        order_updates: true
+        #generate_statistics: true
+    database: mysql
+
+---
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /${CONTEXT_PATH:tvdgapp}
+
+api:
+  url-domain: ${APP_URL_DOMAIN:http://localhost:${server.port}${server.servlet.context-path}}
+  basepath-api: /api/v1
+  basepath-customer: ${api.basepath-api}/customers
+  basepath-user: ${api.basepath-api}/user
+  basepath-affiliate: ${api.basepath-api}/affiliate
+  basepath-rider: ${api.basepath-api}/riders
+  basepath-admin: ${api.basepath-api}/admin
+
+
+domain:
+  dev-profile: ${DEV_PROFILE_URL_DOMAIN:http://167.86.94.2:${server.port}${server.servlet.context-path}}
+
+info:
+  root-dir: ${user.dir}
+
+file:
+  upload-dir: /www/wwwroot/DLE-DEMO
+  upload-dir-tmp: uploads/tmp
+  working-dir: cdn
+
+#file:
+#  upload-dir: /root dir/www/wwwroot/DLE-DEMO
+#  upload-dir-tmp: uploads/tmp
+#  working-dir: /cdn
+
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+
+storage:
+#  default: local
+  default: cloud
+
+validity-term: 10080
+
+#jwt:
+#  authorities:
+#    key: roles
+#  token:
+##    secret-key: ${JWT_SECRET:1xvrtrt56}
+#    secret-key: ${JWT_SECRET:MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnyznyinHJI+C6EWt0ttUWDF2Oq83YmRFzJSCwkL2a+msXj6CwWRD6CzPivNmnq/iYUiSB8kZB2xI1JHiTbryNQ}
+#    expire-length: ${JWT_EXPIRE_LENGTH:86400000}
+
+app:
+  jwt-secret: MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEnyznyinHJI+C6EWt0ttUWDF2Oq83YmRFzJSCwkL2a+msXj6CwWRD6CzPivNmnq/iYUiSB8kZB2xI1JHiTbryNQ
+  jwt-expiration: 86400000
+---
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  web:
+    resources:
+      add-mappings: true
+
+---
+security:
+  basic:
+    enable: false
+  ignored: /signup, /login, /country-codes
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security = DEBUG
+
+management:
+  endpoint:
+    health:
+      show-details: always
+    web:
+    exposure:
+      include: health
+---
+
+spring:
+  jpa:
+    open-in-view: true
+
+## Flyway configurations
+#flyway:
+#  enabled: true
+#  baseline-on-migrate: true
+#  locations: classpath:db/migration
+#  sql-migration-prefix: V
+#  sql-migration-separator: __
+#  sql-migration-suffix: .sql

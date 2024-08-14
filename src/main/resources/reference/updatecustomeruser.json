@@ -1,0 +1,21 @@
+{
+  "title": "mrs",
+  "firstName": "Emma2",
+  "lastName": "Ahola",
+  "email": "emmanuelahola91@gmail.com",
+  "phone": "11234567898",
+  "companyName": "Toladol Ventures Deluxe Global",
+  "companyEmail": "tvdg@gmail.com",
+  "companyPhoneNo": "09061645768",
+  "companyRegNumber":"Re12345",
+  "postalCode": "09061645768",
+  "companyContactName": "Gabriel Jesus",
+  "designation": "Software Engineer",
+  "address": "32B Ladipo Kasumu street, Ikeja",
+  "city": "Lagos",
+  "state": "Lagos",
+  "industry": "Telecoms",
+  "dateOfBirth": "1991-05-06",
+  "natureOfBusiness": "Software development"
+
+}
