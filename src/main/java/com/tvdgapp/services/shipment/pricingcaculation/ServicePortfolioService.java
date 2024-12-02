@@ -27,8 +27,8 @@ public class ServicePortfolioService {
                 .where(PriceModelLevelSpecification.belongsToServicePortfolio(serviceId))
                 .and(PriceModelLevelSpecification.weightBandMatches(shipmentWeight))
                 .and(PriceModelLevelSpecification.regionMatches(region))
-                .and(PriceModelLevelSpecification.customerTypeMatches(pricingLevelId))
-                .and(PriceModelLevelSpecification.unitMatches(units));
+                .and(PriceModelLevelSpecification.customerTypeMatches(pricingLevelId));
+//                .and(PriceModelLevelSpecification.unitMatches(units));
 
         return priceModelLevelRepository.findOne(spec);
     }
@@ -38,7 +38,7 @@ public class ServicePortfolioService {
 
         Optional<PriceModelLevel> priceModelLevel = priceModelLevels.stream()
                 .filter(pml -> pml.getRegion().getCountries().stream()
-                        .anyMatch(c -> c.getName().equalsIgnoreCase(country.trim())))
+                        .anyMatch(c -> c.getIso2().equalsIgnoreCase(country.trim())))
                 .findFirst();
 
         return priceModelLevel

@@ -76,7 +76,7 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
     public CustomerUser createCustomerUser(CustomerUserDto requestDto)  {
 
         if (this.userEmailTaken(requestDto.getEmail())) {
-            throw new DuplicateEntityException(CUSTOMER_USER, requestDto.getEmail());
+            throw new DuplicateEntityException(CUSTOMER_USER.name(), "email", requestDto.getEmail());
         }
 
         CustomerUser user = this.createCustomerUserModelEntity(requestDto);
@@ -85,7 +85,7 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
 
         user = this.saveCustomerUser(user);
 
-        this.walletService.createWalletForUser(user.getId(), requestDto.getCurrency());
+        this.walletService.createWalletForUser(user.getId());
 
         this.sendCreateCustomerUserEmail(user, plainPassword, requestDto.getLoginUrl());
 
@@ -111,7 +111,7 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
         loggedInUser.setFirstName(updateCustomerUserDto.getFirstName());
         loggedInUser.setLastName(updateCustomerUserDto.getLastName());
         loggedInUser.setEmail(updateCustomerUserDto.getEmail());
-        loggedInUser.setTelephoneNumber(updateCustomerUserDto.getPhoneNumber());
+        loggedInUser.setPhone(updateCustomerUserDto.getPhoneNumber());
         if (StringUtils.isNotEmpty(updateCustomerUserDto.getDateOfBirth())) {
             loggedInUser.setDateOfBirth(TvdgAppDateUtils.formatStringToDate(updateCustomerUserDto.getDateOfBirth(), DateConstants.DATE_INPUT_FORMAT));
         }
@@ -136,7 +136,7 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
         customerUser.setCompanyContactName(updateDto.getContactName());
         customerUser.setCompanyRegNumber(updateDto.getCompanyRegistrationNumber());
         customerUser.setCompanyEmail(updateDto.getCompanyEmail());
-        customerUser.setTelephoneNumber(updateDto.getPhoneNumber());
+        customerUser.setPhone(updateDto.getPhoneNumber());
         customerUser.setNatureOfBusiness(updateDto.getNatureOfBusiness());
         customerUser.setIndustry(updateDto.getIndustry());
         customerUser.setPostalCode(updateDto.getPostalCode());
@@ -244,10 +244,11 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
                 customerUser.getFirstName(),
                 customerUser.getLastName(),
                 customerUser.getEmail(),
-                customerUser.getTelephoneNumber(),
+                customerUser.getPhone(),
                 customerUser.getProfilePic(),
                 customerUser.getStatus().name(),
-                customerUser.getLastLogin()
+                customerUser.getLastLogin(),
+                customerUser.getUserType()
         );
 
         String dateOfBirth = customerUser.getDateOfBirth() != null ? customerUser.getDateOfBirth().toString() : "null";
@@ -440,7 +441,7 @@ public class CustomerUserServiceImpl extends TvdgEntityServiceImpl<Long, Custome
         detailDto.setFirstName(customerUser.getFirstName());
         detailDto.setLastName(customerUser.getLastName());
         detailDto.setEmail(customerUser.getEmail());
-        detailDto.setPhone(customerUser.getTelephoneNumber());
+        detailDto.setPhone(customerUser.getPhone());
         detailDto.setDateOfBirth(String.valueOf(customerUser.getDateOfBirth()));
         detailDto.setCompanyName(customerUser.getCompanyName());
         detailDto.setCompanyContactName(customerUser.getCompanyContactName());

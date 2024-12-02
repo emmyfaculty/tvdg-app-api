@@ -5,19 +5,30 @@ import com.tvdgapp.dtos.shipment.*;
 import com.tvdgapp.exceptions.ResourceNotFoundException;
 import com.tvdgapp.mapper.RiderShipmentMapMapper;
 import com.tvdgapp.models.common.audit.AuditSection;
+import com.tvdgapp.models.reference.countrycode.LocaleCountry;
+import com.tvdgapp.models.reference.countrycode.LocaleState;
 import com.tvdgapp.models.shipment.*;
 import com.tvdgapp.models.shipment.pricingcaculation.ExpectedDeliveryDay;
 import com.tvdgapp.models.shipment.pricingcaculation.ShippingService;
+import com.tvdgapp.models.user.Role;
 import com.tvdgapp.models.user.User;
+import com.tvdgapp.models.user.customer.CustomerUser;
 import com.tvdgapp.models.user.rider.RiderShipmentMap;
 import com.tvdgapp.models.user.rider.RiderUser;
+import com.tvdgapp.repositories.User.CustomerUserRepository;
 import com.tvdgapp.repositories.User.UserRepository;
 import com.tvdgapp.repositories.User.rider.RiderRepository;
 import com.tvdgapp.repositories.User.rider.RiderShipmentMapRepository;
+import com.tvdgapp.repositories.reference.country.LocaleCountryRepository;
+import com.tvdgapp.repositories.reference.state.StateRepository;
+import com.tvdgapp.repositories.shipment.CustomerShipmentMapRepository;
 import com.tvdgapp.repositories.shipment.ShipmentRepository;
+import com.tvdgapp.services.auth.UserAuthServiceImpl;
 import com.tvdgapp.services.shipment.ReceiverDetailsService;
 import com.tvdgapp.services.shipment.SenderDetailsService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -36,6 +47,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class RiderShipmentMapService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserAuthServiceImpl.class);
+
+
     private final RiderShipmentMapRepository repository;
 
     private final RiderShipmentMapMapper mapper;
@@ -47,8 +61,12 @@ public class RiderShipmentMapService {
     private final UserRepository userRepository;
     private final SenderDetailsService senderDetailsService;
     private final ReceiverDetailsService receiverDetailsService;
+    private final LocaleCountryRepository countryRepository;
+    private final StateRepository stateRepository;
+    private final CustomerShipmentMapRepository customerShipmentMapRepository;
+    private final CustomerUserRepository customerUserRepository;
 
-    public List<ListShipmentDto> getAll() {
+    public List<FetchShipmentDto> getAll() {
         List<RiderShipmentMap> assignments = repository.findAll();
         return assignments.stream()
                 .map(RiderShipmentMap::getShipment) // Extract the Shipment entity
@@ -56,7 +74,7 @@ public class RiderShipmentMapService {
                 .collect(Collectors.toList());
     }
 
-    public ListShipmentDto getById(Long id) {
+    public FetchShipmentDto getById(Long id) {
         RiderShipmentMap riderShipmentMap = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Assigned shipment not found"));
 
@@ -64,7 +82,7 @@ public class RiderShipmentMapService {
         return this.convertShipmentToDto(shipment);
     }
 
-    public ListShipmentDto getShipmentByUserIdAndShipmentRef(Long riderId, String shipmentRef) {
+    public FetchShipmentDto getShipmentByUserIdAndShipmentRef(Long riderId, String shipmentRef) {
         RiderShipmentMap riderShipmentMap = repository.findByRider_IdAndShipment_ShipmentRef(riderId, shipmentRef)
                 .orElseThrow(() -> new RuntimeException("Shipment not found for the given userId and shipmentRef"));
 
@@ -124,7 +142,7 @@ public class RiderShipmentMapService {
         repository.deleteById(id);
     }
 
-    public List<ListShipmentDto> getAssignedShipmentsByRiderId(Long riderId) {
+    public List<FetchShipmentDto> getAssignedShipmentsByRiderId(Long riderId) {
         // Find all RiderShipmentMap entries for the given riderId
         List<RiderShipmentMap> assignments = repository.findByRiderId(riderId);
 
@@ -143,7 +161,7 @@ public class RiderShipmentMapService {
     }
 
     @Transactional(readOnly = true)
-    public ListShipmentDto getCurrentDeliveryShipment(Long riderId) {
+    public FetchShipmentDto getCurrentDeliveryShipment(Long riderId) {
         Shipment shipment = repository.findCurrentDeliveryShipmentByRider(riderId)
                 .orElseThrow(() -> new IllegalStateException("No current delivery found for the rider."));
 
@@ -151,23 +169,127 @@ public class RiderShipmentMapService {
         return convertShipmentToDto(shipment);
     }
 
+//    @Transactional
+//    public FetchShipmentDto updateShipmentStatus(Long riderId, String shipmentRef, String newStatus) {
+//        // Check if the rider has any shipment in "IN_TRANSIT" status
+//        Optional<Shipment> inTransitShipment = repository.findCurrentDeliveryShipmentByRider(riderId);
+//
+//        // If the rider already has a shipment in "IN_TRANSIT" status and the new status is also "IN_TRANSIT"
+//        if (inTransitShipment.isPresent() && inTransitShipment.get().getStatus().equals("IN_TRANSIT")) {
+//            throw new IllegalStateException("You cannot start a new shipment without completing the current one.");
+//        }
+//
+//        // Fetch the shipment to update
+//        Shipment shipment = shipmentRepository.findByShipmentRef(shipmentRef)
+//                .orElseThrow(() -> new IllegalArgumentException("Shipment not found"));
+//
+//        // Ensure that the shipment is assigned to the rider
+//        RiderShipmentMap riderShipmentMap = repository.findByRiderIdAndShipmentRef(riderId, shipmentRef)
+//                .orElseThrow(() -> new IllegalArgumentException("Shipment is not assigned to this rider"));
+//
+//        // Update the status of the shipment
+//        shipment.setStatus(newStatus);
+//        shipmentRepository.save(shipment);
+//
+//        return convertShipmentToDto(shipment);
+//    }
+
+//    @Transactional
+//    public FetchShipmentDto updateShipmentStatus(Long riderId, String shipmentRef, String newStatus) {
+//        // Fetch the shipment to update
+//        Shipment shipment = shipmentRepository.findByShipmentRef(shipmentRef)
+//                .orElseThrow(() -> new IllegalArgumentException("Shipment not found"));
+//
+//        // Ensure that the shipment is assigned to the rider
+//        RiderShipmentMap riderShipmentMap = repository.findByRiderIdAndShipmentRef(riderId, shipmentRef)
+//                .orElseThrow(() -> new IllegalArgumentException("Shipment is not assigned to this rider"));
+//
+//        // Validate new status is either PICKUP or DELIVERED
+//        if (!newStatus.equalsIgnoreCase("PICKUP") && !newStatus.equalsIgnoreCase("DELIVERED")) {
+//            throw new IllegalArgumentException("Riders can only update the status to 'PICKUP' or 'DELIVERED'.");
+//        }
+//
+//        // Prevent any changes to a shipment that is already delivered
+//        if (shipment.getStatus().equalsIgnoreCase("DELIVERED")) {
+//            throw new IllegalStateException("Shipment is already delivered. Status cannot be updated.");
+//        }
+//
+//        shipment.setStatus(newStatus);
+//        shipmentRepository.save(shipment);
+//
+//        return convertShipmentToDto(shipment);
+//    }
+
+
     @Transactional
-    public ListShipmentDto updateShipmentStatus(Long riderId, String shipmentRef, String newStatus) {
-        // Check if the rider has any shipment in "IN_TRANSIT" status
-        Optional<Shipment> inTransitShipment = repository.findCurrentDeliveryShipmentByRider(riderId);
-
-        // If the rider already has a shipment in "IN_TRANSIT" status and the new status is also "IN_TRANSIT"
-        if (inTransitShipment.isPresent() && inTransitShipment.get().getStatus().equals("IN_TRANSIT")) {
-            throw new IllegalStateException("You cannot start a new shipment without completing the current one.");
-        }
-
+    public FetchShipmentDto updateShipmentStatus(Long userId, String shipmentRef, String newStatus) {
         // Fetch the shipment to update
         Shipment shipment = shipmentRepository.findByShipmentRef(shipmentRef)
                 .orElseThrow(() -> new IllegalArgumentException("Shipment not found"));
 
-        // Ensure that the shipment is assigned to the rider
-        RiderShipmentMap riderShipmentMap = repository.findByRiderIdAndShipmentRef(riderId, shipmentRef)
-                .orElseThrow(() -> new IllegalArgumentException("Shipment is not assigned to this rider"));
+        // Get the current user's role and permissions
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Set<Role> roles = user.getRoles();
+        String role = roles.iterator().next().getName(); // Assuming getName() returns the role name as String
+        boolean isAdmin = isAdmin(role); // Check if the user is an admin based on the role
+        boolean isRider = role.equals("RIDER");
+//        boolean isCustomer = role.equals("CUSTOMER");
+
+        // Role-based validation
+        if (isRider) {
+            // Ensure that the shipment is assigned to the rider
+            RiderShipmentMap riderShipmentMap = repository.findByRiderIdAndShipmentRef(userId, shipmentRef)
+                    .orElseThrow(() -> new IllegalArgumentException("Shipment is not assigned to this rider"));
+
+            // Riders can only update to 'PICKED_UP' or 'DELIVERED'
+            if (!newStatus.equalsIgnoreCase("PICKED_UP") && !newStatus.equalsIgnoreCase("DELIVERED")) {
+                throw new IllegalArgumentException("Riders can only update the status to 'PICKED_UP' or 'DELIVERED'.");
+            }
+        } else if (isAdmin) {
+            // Admin role-based permissions
+            switch (role) {
+                case "MAPPING_OFFICER":
+                    if (!newStatus.equalsIgnoreCase("IN_WAREHOUSE") && !newStatus.equalsIgnoreCase("IN_TRANSIT")) {
+                        throw new IllegalArgumentException("Mapping Officers can only update the status to 'IN_WAREHOUSE' or 'IN_TRANSIT'.");
+                    }
+                    break;
+
+                case "SORTING_OFFICER":
+                    if (!newStatus.equalsIgnoreCase("SORTED")) {
+                        throw new IllegalArgumentException("Sorting Officers can only update the status to 'SORTED'.");
+                    }
+                    break;
+
+                case "HEAD_OF_LOCAL_DELIVERY":
+                    if (!newStatus.equalsIgnoreCase("RETURNED") && !newStatus.equalsIgnoreCase("SHIPPED_OUT")) {
+                        throw new IllegalArgumentException("Head of Local Delivery can only update the status to 'RETURNED' or 'SHIPPED_OUT'.");
+                    }
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unauthorized admin role.");
+            }
+        }
+//        else if (isCustomer) {
+//            // Customers can request cancellation only when the shipment is in the warehouse
+//            if (newStatus.equalsIgnoreCase("CANCELLED") && shipment.getStatus().equalsIgnoreCase("IN_WAREHOUSE")) {
+//                // Handle cancellation request approval by admin
+//                createCancellationRequest(userId, shipmentRef); // Method to create a cancellation request for admin approval
+//                return convertShipmentToDto(shipment); // Return without updating the status, as admin approval is needed
+//            } else {
+//                throw new IllegalArgumentException("Customers can only request cancellation when the shipment is in the 'IN_WAREHOUSE' state.");
+//            }
+//        }
+        else {
+            throw new IllegalArgumentException("Unauthorized user.");
+        }
+
+        // Prevent status change if the shipment is already delivered
+        if (shipment.getStatus().equalsIgnoreCase("DELIVERED") && !newStatus.equalsIgnoreCase("DELIVERED")) {
+            throw new IllegalStateException("Shipment is already delivered. Status cannot be updated.");
+        }
 
         // Update the status of the shipment
         shipment.setStatus(newStatus);
@@ -176,11 +298,105 @@ public class RiderShipmentMapService {
         return convertShipmentToDto(shipment);
     }
 
-    private ListShipmentDto convertShipmentToDto(Shipment shipment) {
-        ListShipmentDto responseDto = new ListShipmentDto();
+    // Check if user is an admin
+    private boolean isAdmin(String role) {
+        return role.equalsIgnoreCase("MAPPING_OFFICER") ||
+                role.equalsIgnoreCase("SORTING_OFFICER") ||
+                role.equalsIgnoreCase("HEAD_OF_LOCAL_DELIVERY");
+    }
+
+//    // Method to handle customer cancellation request
+//    private void createCancellationRequest(Long userId, String shipmentRef) {
+//        // Implement logic to create a cancellation request for admin approval
+//        // This could involve creating a new entity for CancellationRequest and saving it in the database
+//        CancellationRequest request = new CancellationRequest(shipmentRef, userId, LocalDateTime.now(), CancellationStatus.PENDING);
+//        cancellationRequestRepository.save(request);
+//    }
+
+    @Transactional
+    public boolean canStartNavigation(Long riderId, String shipmentRef) {
+        // Fetch the shipment
+        Shipment shipment = shipmentRepository.findByShipmentRef(shipmentRef)
+                .orElseThrow(() -> new IllegalArgumentException("Shipment not found"));
+
+        // Ensure the shipment is assigned to the rider
+        RiderShipmentMap riderShipmentMap = repository.findByRiderIdAndShipmentRef(riderId, shipmentRef)
+                .orElseThrow(() -> new IllegalArgumentException("Shipment is not assigned to this rider"));
+
+        // Check if the shipment is in IN_TRANSIT state
+        if (shipment.getStatus().equalsIgnoreCase("IN_TRANSIT")) {
+            logger.info("Shipment " + shipmentRef + " is in IN_TRANSIT state. Rider can start navigation.");
+            return true; // Allow navigation to start
+        } else {
+            throw new IllegalStateException("Shipment is not in 'IN_TRANSIT' state. Navigation cannot be started.");
+        }
+    }
+
+    @Transactional
+    public List<FetchShipmentDto> getInTransitShipments(Long riderId) {
+        // Fetch all shipments in 'IN_TRANSIT' state for the rider
+        List<Shipment> inTransitShipments = repository.findShipmentsByRiderIdAndStatus(riderId, "IN_TRANSIT");
+
+        // Convert Shipment entities to DTOs
+        return inTransitShipments.stream()
+                .map(this::convertShipmentToDto)
+                .collect(Collectors.toList());
+    }
+
+
+
+
+    @Transactional(readOnly = true)
+    public List<FetchShipmentDto> getShipmentsByRiderAndStatus(Long riderId, String status) {
+        List<Shipment> shipments = repository.findShipmentsByRiderIdAndStatus(riderId, status);
+
+        return shipments.stream()
+                .map(this::convertShipmentToDto)
+                .collect(Collectors.toList());
+    }
+
+    private FetchShipmentDto convertShipmentToDto(Shipment shipment) {
+        FetchShipmentDto responseDto = new FetchShipmentDto();
 
         responseDto.setId(shipment.getId());
+
+        // Fetch customerId from CustomerShipmentMap
+        Optional<CustomerShipmentMap> customerShipmentMapOpt = customerShipmentMapRepository.findByShipmentRef(shipment.getShipmentRef());
+        if (customerShipmentMapOpt.isPresent()) {
+            CustomerShipmentMap customerShipmentMap = customerShipmentMapOpt.get();
+            Long customerId = customerShipmentMap.getCustomerId();
+
+            // Fetch customerType from Customer
+            Optional<CustomerUser> customerOpt = customerUserRepository.findById(customerId);
+            if (customerOpt.isPresent()) {
+                CustomerUser customer = customerOpt.get();
+                responseDto.setCustomerType(customer.getCustomerType());
+            } else {
+                responseDto.setCustomerType(null); // Handle case where customer is not found
+            }
+        } else {
+            responseDto.setCustomerType(null); // Handle case where customerShipmentMap is not found
+        }
+
+        responseDto.setId(shipment.getId());
+
+        // Set service option
+        ShippingService shippingService = shipment.getShippingService();
+        if (shippingService == null) {
+            System.out.println("ShippingService is null");
+        } else {
+            System.out.println("ShippingService is present");
+        }
+
+        if (shippingService != null) {
+            System.out.println("ShippingService Type: " + shippingService.getType());
+            System.out.println("ShippingService Name: " + shippingService.getServiceName());
+        }
+
+        responseDto.setShipmentType(shippingService != null ? shippingService.getType() : null);
+        responseDto.setServiceType(shippingService != null ? shippingService.getServiceName() : null);
         responseDto.setTrackingNumber(shipment.getTrackingNumber());
+        responseDto.setShipmentRef(shipment.getShipmentRef());
 
         // Fetch SenderDetails by shipmentId
         Optional<SenderDetails> senderDetailsOpt = senderDetailsService.findByShipmentRef(shipment.getShipmentRef());
@@ -191,9 +407,20 @@ public class RiderShipmentMapService {
             senderDto.setFirstName(senderDetails.getFirstName());
             senderDto.setLastName(senderDetails.getLastName());
             senderDto.setCompanyName(senderDetails.getCompanyName());
-            senderDto.setCountry(senderDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = senderDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            senderDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = senderDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            senderDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            senderDto.setCountry(senderDetails.getCountry());
             senderDto.setAddress(senderDetails.getAddress());
-            senderDto.setState(senderDetails.getState());
+//            senderDto.setState(senderDetails.getState());
             senderDto.setCity(senderDetails.getCity());
             senderDto.setZipcode(senderDetails.getZipcode());
             senderDto.setEmail(senderDetails.getEmail());
@@ -210,9 +437,20 @@ public class RiderShipmentMapService {
             receiverDto.setFirstName(receiverDetails.getFirstName());
             receiverDto.setLastName(receiverDetails.getLastName());
             receiverDto.setCompanyName(receiverDetails.getCompanyName());
-            receiverDto.setCountry(receiverDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = receiverDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            receiverDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = receiverDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            receiverDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            receiverDto.setCountry(receiverDetails.getCountry());
             receiverDto.setAddress(receiverDetails.getAddress());
-            receiverDto.setState(receiverDetails.getState());
+//            receiverDto.setState(receiverDetails.getState());
             receiverDto.setCity(receiverDetails.getCity());
             receiverDto.setZipcode(receiverDetails.getZipcode());
             receiverDto.setEmail(receiverDetails.getEmail());
@@ -277,11 +515,9 @@ public class RiderShipmentMapService {
 
         responseDto.setReferralCode(shipment.getReferralCode());
 
-        // Set service option
-        ShippingService shippingService = shipment.getShippingService();
 
 // Set the service portfolio name if servicePortfolio is not null
-        responseDto.setServicePortfolio(shippingService != null ? shippingService.getServiceName() : null);
+        responseDto.setServiceName(shippingService != null ? shippingService.getServiceName() : null);
 
 // Set the carrier if servicePortfolio is not null
         if (shippingService != null) {
@@ -325,7 +561,7 @@ public class RiderShipmentMapService {
                 String finalShipmentCountry = shipmentCountry;
                 Optional<ExpectedDeliveryDay> matchingDeliveryDay = shippingService.getExpectedDeliveryDays().stream()
                         .filter(expectedDeliveryDay -> expectedDeliveryDay.getRegion().getCountries().stream()
-                                .anyMatch(country -> country.getName().equalsIgnoreCase(finalShipmentCountry)))
+                                .anyMatch(country -> country.getCountryName().equalsIgnoreCase(finalShipmentCountry)))
                         .findFirst();
 
                 if (matchingDeliveryDay.isPresent()) {

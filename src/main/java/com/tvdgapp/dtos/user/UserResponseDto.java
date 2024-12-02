@@ -36,6 +36,7 @@ public class UserResponseDto {
     @ExcelColumn(name = "Email Address", col = 7,errMsg = "Invalid Email Address- {val}")
     @Size(max = 100)
     protected String email;
+    protected String phoneCode;
     @Size(max = PHONE_NO_COL_SIZE)
     @ExcelColumn(name = "Mobile Number", col = 6)
     protected String phone;

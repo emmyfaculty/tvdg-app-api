@@ -31,8 +31,7 @@ import java.io.File;
 import java.util.Optional;
 
 import static com.tvdgapp.constants.SchemaConstant.FILE_CLAIM_REQUEST_TO_EMAIL;
-import static com.tvdgapp.exceptions.EntityType.CUSTOMER_USER;
-import static com.tvdgapp.exceptions.EntityType.SHIPMENT;
+import static com.tvdgapp.exceptions.EntityType.*;
 
 @Service
 @Slf4j
@@ -57,7 +56,8 @@ public class FileClaimServiceImpl extends TvdgEntityServiceImpl<Long, FileClaims
         }
         fileClaimRepository.findByShipmentTrackingNo(requestDto.getShipmentTrackingNo())
                 .ifPresent(existingClaim -> {
-                    throw new DuplicateEntityException("File claim with tracking number " + requestDto.getShipmentTrackingNo() + " already exists");
+//                    throw new DuplicateEntityException("File claim with tracking number " + requestDto.getShipmentTrackingNo() + " already exists");
+                    throw new DuplicateEntityException(FILE_CLAIM.name(), " with tracking number ", requestDto.getShipmentTrackingNo() + " already exist");
                 });
 
         FileClaims fileClaims = new FileClaims();
@@ -74,6 +74,8 @@ public class FileClaimServiceImpl extends TvdgEntityServiceImpl<Long, FileClaims
         FileClaimResponseDto responseDto = mapFileClaimToResponseDto(fileClaims);
 
         return responseDto;
+
+
     }
 
     @Override

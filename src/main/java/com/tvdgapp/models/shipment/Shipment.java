@@ -118,6 +118,8 @@ public class Shipment extends TvdgAppEntity<Long, Shipment> implements Auditable
     private BigDecimal pickupFee = BigDecimal.ZERO;
     @Column(name = "expected_delivery_date")
     private Date expectedDeliveryDate;
+    @Column(precision = 19, scale = 2)
+    private BigDecimal documentCharge = BigDecimal.ZERO;;
 
     @Embedded
     private AuditSection auditSection = new AuditSection();

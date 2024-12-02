@@ -37,7 +37,16 @@
 <p class="headline"><span>Headline:</span>Your Account Has Been Approved </p>
 <p>Dear ${EMAIL_FULLNAME}</p>
 <p>Your account has been approved and is now active.
-    <br/>You can log in and start using our services.
+    <br/>Your current login information is now:
+
+<p>
+    <br> <span class="text-bold">Username:</span><span>${EMAIL_USER_NAME}</span>
+    <br><span class="text-bold">Password:</span><span>${EMAIL_USER_PASSWORD}</span>
+    <br/>Your Affiliate Code:
+    <br><span class="text-bold">Referral Code:</span><span>${EMAIL_USER_REFERRAL_CODE}</span>
+</p>
+<p>To access your DLE Web App account, login at: </p>
+<p><a href="${APP_URL}" target="_blank">${APP_URL}</a></p>
 
 <p>Best Regards,\nThe Team</p>
 

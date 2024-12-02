@@ -43,10 +43,10 @@ public class Permission extends TvdgAppEntity<Integer, Permission> implements Au
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    private PermissionType permissionType;
-    @Column(length = 50)
-    private String permissionGroup;
+//    @Enumerated(EnumType.STRING)
+//    private PermissionType permissionType;
+//    @Column(length = 50)
+//    private String permissionGroup;
 
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private Set<Role> roles = new HashSet<>();
@@ -72,7 +72,7 @@ public class Permission extends TvdgAppEntity<Integer, Permission> implements Au
                 ", permission='" + permission + '\'' +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", permissionType=" + permissionType +
+//                ", permissionType=" + permissionType +
                 '}';
     }
 }

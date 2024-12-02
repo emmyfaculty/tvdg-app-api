@@ -2,7 +2,6 @@ package com.tvdgapp.populator;
 
 import com.tvdgapp.constants.DateConstants;
 import com.tvdgapp.dtos.affiliate.AffiliateUserDto;
-import com.tvdgapp.models.user.RoleType;
 import com.tvdgapp.models.user.UserStatus;
 import com.tvdgapp.models.user.UserType;
 import com.tvdgapp.models.user.affiliateuser.AffiliateUser;
@@ -30,7 +29,8 @@ public class AffiliateUserPopulator extends AbstractDataPopulator<AffiliateUserD
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setEmail(source.getEmail());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhoneCode(source.getPhoneCode());
+        target.setPhone(source.getPhone());
         target.setUsername(source.getUsername());
         target.setStatus(UserStatus.PENDING);
         target.setUserType(UserType.AFFILIATE);
@@ -39,7 +39,7 @@ public class AffiliateUserPopulator extends AbstractDataPopulator<AffiliateUserD
         target.setIdentificationNumber(source.getIdentificationNumber());
         target.setIdentificationType(source.getIdentificationType());
         target.setGender(source.getGender());
-        target.setReferralCode(CodeGeneratorUtils.generateReferralCode());
+//        target.setReferralCode(CodeGeneratorUtils.generateReferralCode());
         target.setCountry(source.getCountry());
         target.setState(source.getState());
         target.setStreetAddress(source.getStreetAddress());
@@ -47,6 +47,7 @@ public class AffiliateUserPopulator extends AbstractDataPopulator<AffiliateUserD
         if (StringUtils.isNotEmpty(source.getDateOfBirth())) {
             target.setDateOfBirth(TvdgAppDateUtils.formatStringToDate(source.getDateOfBirth(), DateConstants.DATE_INPUT_FORMAT));
         }
+        target.setEnableOtp(false);
         return target;
     }
 

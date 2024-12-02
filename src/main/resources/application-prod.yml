@@ -50,27 +50,12 @@ spring:
   # ===============================
   # = MAIL
   # ===============================
-#  mail:
-#    host: smtp.gmail.com
-#    port: 587
-#    username: aholemm@gmail.com
-#    password: zvbhyekplqjyfgyo
-#    properties:
-#      mail:
-#        transport:
-#          protocol: smtp
-#        smtp:
-#          auth: true
-#          starttls:
-#            enable: true
-#            required: true
-#          ssl:
-#            trust: smtp.gmail.com
-#          connectiontimeout: 5000
+
+
   mail:
-    host: smtp.gmail.com
-    password: zvbhyekplqjyfgyo
-    username: aholemmy@gmail.com
+    host: smtp.zeptomail.com
+    username: emailapikey
+    password: wSsVR61y/USjX/t6mzGrdrtumQwHVFrxQBx5ilqkuXT4TfnH88c5k0zIV1WvFfJLEzZsHTsU9+l8kU8F0mJajNh4nwwGCSiF9mqRe1U4J3x17qnvhDzDV25bkxWAKI0MwgRrk2RgEMgj+g==
     properties:
       mail:
         transport:
@@ -83,8 +68,26 @@ spring:
             required: true
           ssl:
             enable: true
-            trust: smtp.gmail.com
+            trust: smtp.zeptomail.com
           connectiontimeout: 5000
+#  mail:
+#    host: smtp.gmail.com
+#    password: zvbhyekplqjyfgyo
+#    username: aholemmy@gmail.com
+#    properties:
+#      mail:
+#        transport:
+#          protocol: smtp
+#        smtp:
+#          port: 465
+#          auth: true
+#          starttls:
+#            enable: true
+#            required: true
+#          ssl:
+#            enable: true
+#            trust: smtp.gmail.com
+#          connectiontimeout: 5000
 ---
 config.emailSender: default
 config.emailSender.region: us_west_2

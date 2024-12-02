@@ -13,7 +13,7 @@ public class ShippingServiceDTO {
     private Long priceModelLevelId;
     private String carrier;
     private List<Long> expectedDeliveryDays;
-    private List<Long> priceModelLevels;
+    private List<Integer> priceModelLevels;
 
 }
 

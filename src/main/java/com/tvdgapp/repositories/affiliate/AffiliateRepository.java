@@ -26,7 +26,7 @@ public interface AffiliateRepository extends JpaRepository<AffiliateUser, Long> 
     Optional<AffiliateUser> findCustomerByPasswordResetToken(String token);
 
     Optional<AffiliateUser> findByReferralCode(String referralCode);
-    @Query("select new com.tvdgapp.dtos.affiliate.ListAffiliateUserDto(u.id,u.title,CONCAT(u.lastName,' ', u.firstName),u.email,u.telephoneNumber,u.status,u.auditSection.dateCreated,u.streetAddress, u.country, u.state, u.city) from AffiliateUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
+    @Query("select new com.tvdgapp.dtos.affiliate.ListAffiliateUserDto(u.id,u.title,CONCAT(u.lastName,' ', u.firstName),u.email,u.phone,u.status,u.auditSection.dateCreated,u.streetAddress, u.country, u.state, u.city) from AffiliateUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
     Page<ListAffiliateUserDto> listAffiliateUsers(Pageable pageable);
     @Query("select u from AffiliateUser u where u.id = ?1 and u.auditSection.delF='0'")
     Optional<AffiliateUser> findAffiliateUserDetail(Long userId);

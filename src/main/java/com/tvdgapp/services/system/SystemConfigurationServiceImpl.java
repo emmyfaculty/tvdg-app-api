@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+
 //@RequiredArgsConstructor
 @Service
 public class SystemConfigurationServiceImpl extends TvdgEntityServiceImpl<Long, SystemConfiguration> implements SystemConfigurationService {
@@ -52,7 +53,7 @@ public class SystemConfigurationServiceImpl extends TvdgEntityServiceImpl<Long, 
         }
         configuration.setConfigurationKey(SchemaConstant.COMPANY_NAME);
         configuration.setConfigurationName("Company Name");
-        configuration.setValue("Toladol Venture Deluxe Global");
+        configuration.setValue("Deluxe Link Express");
         configuration.setConfigurationGroup(GENERAL);
         configuration.setSortOrder(2);
         this.create(configuration);
@@ -125,6 +126,16 @@ public class SystemConfigurationServiceImpl extends TvdgEntityServiceImpl<Long, 
             this.create(configuration);
         }
 
+        if (!mapByKey.containsKey(SchemaConstant.EMAIL_SUBJ_RESET_PSSWORD_EMAIL)) {
+            configuration = new SystemConfiguration();
+            configuration.setConfigurationKey(SchemaConstant.EMAIL_SUBJ_RESET_PSSWORD_EMAIL);
+            configuration.setConfigurationName("DLE Reset password email subject");
+            configuration.setValue(SchemaConstant.DEFAULT_PASSWORD_RESET_EMAIL_SUBJ);
+            configuration.setConfigurationGroup(EMAIL);
+            configuration.setSortOrder(4);
+            this.create(configuration);
+        }
+
 
         if (!mapByKey.containsKey(SchemaConstant.EMAIL_SUBJ_PASSWORD_CREATED_MAIL)) {
             configuration = new SystemConfiguration();
@@ -152,6 +163,11 @@ public class SystemConfigurationServiceImpl extends TvdgEntityServiceImpl<Long, 
             configuration.setConfigurationName("Email Configuration");
             configuration.setDescription("Set up default email configuration");
             configuration.setValue(emailConfig.toJSONString());
+
+//            if (configuration.getValue().length() > MAX_LENGTH) {
+//                throw new DataTooLongException("The value exceeds the maximum allowed length.");
+//            }
+            this.create(configuration);
 
             this.create(configuration);
         }

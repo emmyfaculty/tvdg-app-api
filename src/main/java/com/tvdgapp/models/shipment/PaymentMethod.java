@@ -7,7 +7,7 @@ public enum PaymentMethod {
     DEBIT_CARD("Debit Card"),
     BANK_TRANSFER("Bank Transfer"),
     BANK_DEPOSIT("Bank Deposit"),
-    PAY_STACK("Paystack"),
+    PAYSTACK("Paystack"),
     WALLET("wallet");
 
     @Getter

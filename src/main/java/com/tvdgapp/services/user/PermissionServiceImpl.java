@@ -63,10 +63,10 @@ public class PermissionServiceImpl extends TvdgEntityServiceImpl<Integer, Permis
         return CollectionUtils.isEmpty(names) ? Collections.emptyList() : repository.findByPermissionIn(names);
     }
 
-    @Override
-    public Collection<Permission> fetchPermissions(PermissionType permissionType) {
-        return this.repository.findAllByPermissionType(permissionType);
-    }
+//    @Override
+//    public Collection<Permission> fetchPermissions(PermissionType permissionType) {
+//        return this.repository.findAllByPermissionType(permissionType);
+//    }
 
     @Transactional
     public Permission createPermission(@Valid PermissionRequestDto permissionDTO) {
@@ -80,8 +80,8 @@ public class PermissionServiceImpl extends TvdgEntityServiceImpl<Integer, Permis
         newPermission.setPermission(permissionDTO.getPermission());
         newPermission.setName(permissionDTO.getName());
         newPermission.setDescription(permissionDTO.getDescription());
-        newPermission.setPermissionType(permissionDTO.getPermissionType());
-        newPermission.setPermissionGroup(permissionDTO.getPermissionGroup());
+//        newPermission.setPermissionType(permissionDTO.getPermissionType());
+//        newPermission.setPermissionGroup(permissionDTO.getPermissionGroup());
 
         return repository.save(newPermission);
     }
@@ -98,8 +98,8 @@ public class PermissionServiceImpl extends TvdgEntityServiceImpl<Integer, Permis
         permission.setPermission(permissionDTO.getPermission());
         permission.setName(permissionDTO.getName());
         permission.setDescription(permissionDTO.getDescription());
-        permission.setPermissionType(permissionDTO.getPermissionType());
-        permission.setPermissionGroup(permissionDTO.getPermissionGroup());
+//        permission.setPermissionType(permissionDTO.getPermissionType());
+//        permission.setPermissionGroup(permissionDTO.getPermissionGroup());
 
         // Save the updated Permission entity
         Permission updatedPermission = repository.save(permission);
@@ -184,7 +184,7 @@ public class PermissionServiceImpl extends TvdgEntityServiceImpl<Integer, Permis
     private Collection<ListPermissionDto> convertEntityToDtos(Collection<Permission> permissions) {
         Map<String,ListPermissionDto> holdMap=new HashMap<>();
         permissions.forEach(perm -> {
-            var listPermDto=holdMap.computeIfAbsent(perm.getPermissionGroup(),permGrp-> new ListPermissionDto(permGrp,new ArrayList<>()));
+            var listPermDto=holdMap.computeIfAbsent(perm.getPermission(),permGrp-> new ListPermissionDto(permGrp,new ArrayList<>()));
             listPermDto.getPermissions().add(new PermissionDto(perm.getPermission(),perm.getName(),perm.getDescription()));
         });
         return holdMap.values();

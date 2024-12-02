@@ -33,5 +33,6 @@ public class RiderUser extends User {
 
     @Column(nullable = false)
     private Date dateOfBirth;
+    private String employeeId;
 
 }

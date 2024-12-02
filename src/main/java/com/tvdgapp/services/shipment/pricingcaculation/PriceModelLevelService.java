@@ -1,16 +1,14 @@
 package com.tvdgapp.services.shipment.pricingcaculation;
 
 import com.tvdgapp.dtos.shipment.pricingcaculation.CreatePriceModelLevelDto;
-import com.tvdgapp.dtos.shipment.pricingcaculation.PriceModelLevelDTO;
-import com.tvdgapp.dtos.shipment.pricingcaculation.UpdatePriceModelLevelDto;
 import com.tvdgapp.exceptions.ResourceNotFoundException;
 import com.tvdgapp.mapper.PriceModelLevelMapper;
 import com.tvdgapp.models.reference.Region;
-import com.tvdgapp.models.shipment.nationwide.NationWideRegion;
+
 import com.tvdgapp.models.shipment.pricingcaculation.PriceModelLevel;
 import com.tvdgapp.models.shipment.pricingcaculation.PricingLevel;
+import com.tvdgapp.models.shipment.pricingcaculation.PricingType;
 import com.tvdgapp.models.shipment.pricingcaculation.ShippingService;
-import com.tvdgapp.repositories.shipment.nationwide.NationWideRegionRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.PriceModelLevelRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.PricingLevelRepository;
 import com.tvdgapp.services.reference.RegionService;
@@ -31,43 +29,42 @@ public class PriceModelLevelService {
     private final PriceModelLevelMapper priceModelLevelMapper;
     private final RegionService regionService;
     private final PricingLevelRepository pricingLevelRepository;
-    private final NationWideRegionRepository nationWideRegionRepository;
 
-    public PriceModelLevelDTO createPriceModelLevel(CreatePriceModelLevelDto createDto) {
+    public CreatePriceModelLevelDto createPriceModelLevel(CreatePriceModelLevelDto createDto) {
                 // Validate weight band start and end
         if (!isValidWeightBand(createDto)) {
             throw new IllegalArgumentException("Invalid weight band range.");
         }
         PriceModelLevel priceModelLevel = priceModelLevelMapper.toEntity(createDto);
         PriceModelLevel savedPriceModelLevel = priceModelLevelRepository.save(priceModelLevel);
-        return priceModelLevelMapper.toDto(savedPriceModelLevel);
+        return priceModelLevelMapper.toDTO(savedPriceModelLevel);
     }
 
-    public PriceModelLevelDTO getPriceModelLevelById(Long id) {
+    public CreatePriceModelLevelDto getPriceModelLevelById(Long id) {
         PriceModelLevel priceModelLevel = priceModelLevelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PriceModelLevel not found"));
-        return priceModelLevelMapper.toDto(priceModelLevel);
+        return priceModelLevelMapper.toDTO(priceModelLevel);
     }
 
-    public PriceModelLevelDTO updatePriceModelLevel(Long id, UpdatePriceModelLevelDto updateDto) {
+    public CreatePriceModelLevelDto updatePriceModelLevel(Long id, CreatePriceModelLevelDto updateDto) {
         PriceModelLevel priceModelLevel = priceModelLevelRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PriceModelLevel not found"));
         Region region = regionService.findRegionById(Math.toIntExact(updateDto.getRegionId()));
 
-        priceModelLevel.setWeightBandStart(updateDto.getWeightBandStart());
-        priceModelLevel.setWeightBandEnd(updateDto.getWeightBandEnd());
-        priceModelLevel.setUnits(updateDto.getUnits());
+        priceModelLevel.setWeightFrom(updateDto.getWeightFrom());
+        priceModelLevel.setWeightTo(updateDto.getWeightTo());
+        priceModelLevel.setBaseUnit(updateDto.getBaseUnit());
         priceModelLevel.setRegion(region);
-        if (updateDto.getNationWideRegionId() != null) {
-            NationWideRegion nationWideRegion = nationWideRegionRepository.findById(Long.valueOf(updateDto.getNationWideRegionId()))
-                    .orElseThrow(() -> new IllegalArgumentException("NationWideRegion not found"));
-            priceModelLevel.setNationWideRegion(nationWideRegion);
-        }
+//        if (updateDto.getNationWideRegionId() != null) {
+//            NationWideRegion nationWideRegion = nationWideRegionRepository.findById(Long.valueOf(updateDto.getNationWideRegionId()))
+//                    .orElseThrow(() -> new IllegalArgumentException("NationWideRegion not found"));
+//            priceModelLevel.setNationWideRegion(nationWideRegion);
+//        }
         priceModelLevel.setDescription(updateDto.getDescription());
-        priceModelLevel.setPrice(updateDto.getPrice());
-        priceModelLevel.setCurrency(updateDto.getCurrency());
-        if (updateDto.getPricingLevelId() != null) {
-            PricingLevel pricingLevel = pricingLevelRepository.findById(updateDto.getPricingLevelId())
+        priceModelLevel.setRate(updateDto.getRate());
+        priceModelLevel.setCurrencyCode(updateDto.getCurrencyCode() );
+        if (updateDto.getLevelId() != null) {
+            PricingLevel pricingLevel = pricingLevelRepository.findById(updateDto.getLevelId())
                     .orElseThrow(() -> new IllegalArgumentException("pricingModel not found"));
             priceModelLevel.setPricingLevel(pricingLevel);
         }
@@ -76,10 +73,10 @@ public class PriceModelLevelService {
             shippingService.setServiceId(updateDto.getServiceId());
             priceModelLevel.setShippingService(shippingService);
         }
-        priceModelLevel.setTotalCostForWeightRange(updateDto.getTotalCostForWeightRange());
+        priceModelLevel.setPricingType(PricingType.valueOf(updateDto.getPricingType()));
 
         PriceModelLevel updatedPriceModelLevel = priceModelLevelRepository.save(priceModelLevel);
-        return priceModelLevelMapper.toDto(updatedPriceModelLevel);
+        return priceModelLevelMapper.toDTO(updatedPriceModelLevel);
     }
 
     public void deletePriceModelLevel(Long id) {
@@ -89,33 +86,33 @@ public class PriceModelLevelService {
         priceModelLevelRepository.deleteById(id);
     }
 
-    public List<PriceModelLevelDTO> getAllPriceModelLevels() {
+    public List<CreatePriceModelLevelDto> getAllPriceModelLevels() {
         return priceModelLevelRepository.findAll().stream()
-                .map(priceModelLevelMapper::toDto)
+                .map(priceModelLevelMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-        public List<PriceModelLevelDTO> getPriceModelLevelsByServicePortfolioId(Long servicePortfolioId) {
+        public List<CreatePriceModelLevelDto> getPriceModelLevelsByServicePortfolioId(Long servicePortfolioId) {
         return priceModelLevelRepository.findByShippingServiceServiceId(servicePortfolioId)
                 .stream()
-                .map(priceModelLevelMapper::toDto)
+                .map(priceModelLevelMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
         private boolean isValidWeightBand(CreatePriceModelLevelDto priceModelLevelDTO) {
-        BigDecimal weightBandStart = priceModelLevelDTO.getWeightBandStart();
-        BigDecimal weightBandEnd = priceModelLevelDTO.getWeightBandEnd();
-        Integer pricingModelId = priceModelLevelDTO.getPricingLevelId();
-        Long regionId = priceModelLevelDTO.getRegionId();
+        BigDecimal weightBandStart = priceModelLevelDTO.getWeightFrom();
+        BigDecimal weightBandEnd = priceModelLevelDTO.getWeightTo();
+        Integer pricingModelId = priceModelLevelDTO.getLevelId();
+        Integer regionId = priceModelLevelDTO.getRegionId();
 
         // Check if weightBandStart is equal to weightBandEnd of any existing range
-        boolean isStartEqualToEnd = priceModelLevelRepository.existsByWeightBandEndAndPricingLevelLevelIdAndRegionRegionId(weightBandStart, Long.valueOf(pricingModelId), regionId);
+        boolean isStartEqualToEnd = priceModelLevelRepository.existsByWeightToAndPricingLevelLevelIdAndRegionRegionId(weightBandStart, Long.valueOf(pricingModelId), Long.valueOf(regionId));
         if (isStartEqualToEnd) {
             return false;
         }
 
         // Check for overlapping ranges
-        boolean isOverlapping = priceModelLevelRepository.existsOverlappingRange(weightBandStart, weightBandEnd, Long.valueOf(pricingModelId), regionId);
+        boolean isOverlapping = priceModelLevelRepository.existsOverlappingRange(weightBandStart, weightBandEnd, Long.valueOf(pricingModelId), Long.valueOf(regionId));
             return !isOverlapping;
         }
 }

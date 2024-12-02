@@ -14,9 +14,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.util.Set;
-
-import static com.tvdgapp.constants.SchemaConstant.TABLE_SHIPMENT_PROFILE;
+import static com.tvdgapp.constants.SchemaConstant.CUSTOMER_SHIPMENT_PROFILE;
 
 @Getter
 @Setter
@@ -29,9 +27,9 @@ import static com.tvdgapp.constants.SchemaConstant.TABLE_SHIPMENT_PROFILE;
                 "SET deleted = '1' " +
                 "WHERE id = ?")
 @Where(clause = "deleted='0'")
-@Table(name=TABLE_SHIPMENT_PROFILE)
+@Table(name= CUSTOMER_SHIPMENT_PROFILE)
 @SuppressWarnings("NullAway.Init")
-public class ShippingProfile extends TvdgAppEntity<Long, ShippingProfile> implements Auditable {
+public class CustomerShippingProfile extends TvdgAppEntity<Long, CustomerShippingProfile> implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")

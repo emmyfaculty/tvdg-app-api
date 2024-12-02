@@ -21,6 +21,7 @@ public class ListShipmentDto {
 
     private Long id;
     private String trackingNumber;
+    private String shipmentRef;
     private CustomerType customerType;
     private ShipmentType shipmentType;
     private ServiceType serviceType;

@@ -43,6 +43,7 @@ public class UserDto {
     @Size(max = PHONE_NO_COL_SIZE)
     @ExcelColumn(name = "Mobile Number", col = 6)
     protected String phone;
+    protected String phoneCode;
     @Enum(enumClass= UserStatus.class)
     @NotEmpty(message = "Field is required")
     protected String status= UserStatus.ACTIVE.name();

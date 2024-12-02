@@ -32,9 +32,9 @@ public interface ServicePortfolioMapper {
     }
 
     @Named("priceModelLevelIds")
-    default List<Long> mapPriceModelLevelsToIds(List<PriceModelLevel> priceModelLevels) {
+    default List<Integer> mapPriceModelLevelsToIds(List<PriceModelLevel> priceModelLevels) {
         return priceModelLevels.stream()
-                .map(PriceModelLevel::getId)
+                .map(PriceModelLevel::getPricingId)
                 .collect(Collectors.toList());
     }
 

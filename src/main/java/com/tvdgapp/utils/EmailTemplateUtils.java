@@ -69,7 +69,7 @@ public class EmailTemplateUtils {
         Map<String, Object> templateTokens = this.createEmailObjectsMap();
         templateTokens.put(EmailConstants.EMAIL_PASSWORD_RESET_URL, passwordResetUrl);
         templateTokens.put(EmailConstants.EMAIL_FULLNAME, user.getLastName() + " " + user.getFirstName());
-        String subject = this.systemConfigurationService.findConfigValueByKey(SchemaConstant.EMAIL_SUBJ_CREATE_PSSWORD_EMAIL);
+        String subject = this.systemConfigurationService.findConfigValueByKey(SchemaConstant.EMAIL_SUBJ_RESET_PSSWORD_EMAIL);
         if (StringUtils.isEmpty(subject)) {
             subject = SchemaConstant.DEFAULT_PASSWORD_RESET_EMAIL_SUBJ;
             log.warn("Found no password reset email subject defined in configuration. Using application defined subject:" + subject + " as a fallback");
@@ -204,12 +204,12 @@ public class EmailTemplateUtils {
         this.emailService.sendAsyncEmail(email);
     }
 
-    public void sendCreateAdminUserEmail(AdminUser adminUser, String plainPassword) {
+    public void sendCreateAdminUserEmail(AdminUser adminUser, String plainPassword, String loginUrl) {
         Map<String, Object> templateTokens = this.createEmailObjectsMap();
         templateTokens.put(EmailConstants.EMAIL_USER_PASSWORD, plainPassword);
         templateTokens.put(EmailConstants.EMAIL_FULLNAME, adminUser.getLastName() + " " + adminUser.getFirstName());
         templateTokens.put(EmailConstants.EMAIL_USER_NAME, adminUser.getEmail());
-        templateTokens.put("APP_URL", urlDomain + "/login");
+        templateTokens.put("APP_URL", loginUrl);
 
         String subject = this.systemConfigurationService.findConfigValueByKey(SchemaConstant.EMAIL_SUBJ_CREATE_ADMIN_USER_EMAIL);
         if (StringUtils.isEmpty(subject)) {

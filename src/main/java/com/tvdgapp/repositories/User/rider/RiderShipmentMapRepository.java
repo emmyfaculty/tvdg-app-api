@@ -19,4 +19,9 @@ public interface RiderShipmentMapRepository extends JpaRepository<RiderShipmentM
     Optional<Shipment> findCurrentDeliveryShipmentByRider(Long riderId);
     @Query("SELECT rsm FROM RiderShipmentMap rsm WHERE rsm.rider.id = :riderId AND rsm.shipment.shipmentRef = :shipmentRef")
     Optional<RiderShipmentMap> findByRiderIdAndShipmentRef(Long riderId, String shipmentRef);
+
+    @Query("SELECT rsm.shipment FROM RiderShipmentMap rsm WHERE rsm.rider.id = :riderId AND rsm.shipment.status = :status")
+    List<Shipment> findShipmentsByRiderIdAndStatus(Long riderId, String status);
+
+//    List<Shipment> findAllByRiderIdAndStatus(Long riderId, String inTransit);
 }

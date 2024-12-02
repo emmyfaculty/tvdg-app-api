@@ -11,7 +11,7 @@ import lombok.Setter;
 import java.sql.Timestamp;
 import java.util.List;
 
-import static com.tvdgapp.constants.SchemaConstant.TABLE_SHIPPING_SERVICE;
+import static com.tvdgapp.constants.SchemaConstant.TABLE_SHIPPING_SERVICES;
 
 @Getter
 @Setter
@@ -19,7 +19,7 @@ import static com.tvdgapp.constants.SchemaConstant.TABLE_SHIPPING_SERVICE;
 @NoArgsConstructor
 @EntityListeners(AuditListener.class)
 @Entity
-@Table(name= TABLE_SHIPPING_SERVICE)
+@Table(name= TABLE_SHIPPING_SERVICES)
 public class ShippingService /*extends TvdgAppEntity<Long, ShippingService> implements Auditable */ {
 
     @Id

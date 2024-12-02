@@ -1,13 +1,10 @@
 package com.tvdgapp.populator.user;
 
-import com.tvdgapp.dtos.user.UserDto;
-import com.tvdgapp.dtos.user.admin.AdminUserDto;
 import com.tvdgapp.dtos.user.admin.AdminUserRequestDto;
 import com.tvdgapp.models.user.UserStatus;
 import com.tvdgapp.models.user.UserType;
 import com.tvdgapp.models.user.admin.AdminUser;
 import com.tvdgapp.populator.AbstractDataPopulator;
-import com.tvdgapp.utils.TvdgAppDateUtils;
 import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,10 +21,12 @@ public class AdminUserPopulator extends
         target.setEmail(source.getEmail());
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhoneCode(source.getPhoneCode());
+        target.setPhone(source.getPhone());
         target.setUserType(UserType.ADMIN);
 //        target.setGenerateCode(source.getGenerateCode());
         target.setStatus(UserStatus.valueOf(source.getStatus()));
+        target.setEnableOtp(false);
         return target;
     }
 

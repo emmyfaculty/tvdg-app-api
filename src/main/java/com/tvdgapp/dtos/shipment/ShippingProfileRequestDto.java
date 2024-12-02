@@ -39,9 +39,6 @@ public class ShippingProfileRequestDto {
 
     @NotNull
     private double monthlyRevenue;
-//    private ShipmentMode shipmentMode;
-//    private String pickupAddress;
-//    private int numberOfMonthlyPackages;
 
 }
 

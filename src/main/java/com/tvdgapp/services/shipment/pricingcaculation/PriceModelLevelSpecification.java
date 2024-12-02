@@ -62,10 +62,10 @@ public class PriceModelLevelSpecification {
 
     public static Specification<PriceModelLevel> weightBandMatches(BigDecimal shipmentWeight) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.and(
-                criteriaBuilder.lessThanOrEqualTo(root.get("weightBandStart"), shipmentWeight),
+                criteriaBuilder.lessThanOrEqualTo(root.get("weightFrom"), shipmentWeight),
                 criteriaBuilder.or(
-                        criteriaBuilder.greaterThanOrEqualTo(root.get("weightBandEnd"), shipmentWeight),
-                        criteriaBuilder.isNull(root.get("weightBandEnd"))
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("weightTo"), shipmentWeight),
+                        criteriaBuilder.isNull(root.get("weightTo"))
                 )
         );
     }

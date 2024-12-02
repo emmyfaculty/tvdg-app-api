@@ -77,9 +77,9 @@ public class ServicePortfolioServiceImp {
         return servicePortfolioMapper.toDto(existingShippingService);
     }
 
-    public void addPriceModelLevels(ShippingService shippingService, List<Long> priceModelLevelIds) {
+    public void addPriceModelLevels(ShippingService shippingService, List<Integer> priceModelLevelIds) {
         List<PriceModelLevel> priceModelLevels = priceModelLevelIds.stream()
-                .map(id -> priceModelLevelRepository.findById(id)
+                .map(id -> priceModelLevelRepository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new TvdgException.EntityNotFoundException("PriceModelLevel not found with id " + id)))
                 .collect(Collectors.toList());
         shippingService.setPriceModelLevels(priceModelLevels);

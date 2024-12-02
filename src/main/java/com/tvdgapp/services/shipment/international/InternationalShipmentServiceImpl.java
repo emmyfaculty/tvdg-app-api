@@ -2,18 +2,11 @@ package com.tvdgapp.services.shipment.international;
 
 import com.tvdgapp.dtos.shipment.CalculateShippingOptionDto;
 import com.tvdgapp.dtos.shipment.ServicePortfolioResponseDto;
-import com.tvdgapp.models.reference.Region;
 import com.tvdgapp.models.shipment.ServiceType;
 import com.tvdgapp.models.shipment.ShipmentType;
-import com.tvdgapp.models.shipment.nationwide.TotalCostForWeightRange;
-import com.tvdgapp.models.shipment.pricingcaculation.ExpectedDeliveryDay;
-import com.tvdgapp.models.shipment.pricingcaculation.PriceModelLevel;
-import com.tvdgapp.models.shipment.pricingcaculation.PricingLevel;
-import com.tvdgapp.models.shipment.pricingcaculation.ShippingService;
+import com.tvdgapp.models.shipment.pricingcaculation.*;
 import com.tvdgapp.models.user.customer.CustomerUser;
-import com.tvdgapp.models.user.customer.PricingCategory;
 import com.tvdgapp.repositories.User.CustomerUserRepository;
-import com.tvdgapp.repositories.reference.RegionRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.ExpectedDeliveryDayRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.ShippingServiceRepository;
 import com.tvdgapp.services.shipment.pricingcaculation.ServicePortfolioService;
@@ -25,7 +18,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -136,7 +128,7 @@ public class InternationalShipmentServiceImpl implements InternationalShipmentSe
                                 String.valueOf(shipmentRequestDto.getUnits()));
 
                         // Calculate total cost
-                        double totalCost = calculateTotalCost(priceModelLevel, convertedWeightToUse);
+                        BigDecimal totalCost = calculateTotalCost(priceModelLevel, convertedWeightToUse);
 
                         // Fetch expected delivery days based on region and service portfolio
                         String region = priceModelLevel.getRegion().getRegionName();
@@ -184,12 +176,15 @@ public class InternationalShipmentServiceImpl implements InternationalShipmentSe
         return weight;
     }
 
-    private double calculateTotalCost(PriceModelLevel priceModelLevel, double weightToUse) {
-        double pricePerKgOrTotalCost = priceModelLevel.getPrice();
-        if (priceModelLevel.getTotalCostForWeightRange() == TotalCostForWeightRange.TRUE) {
+    private BigDecimal calculateTotalCost(PriceModelLevel priceModelLevel, double weightToUse) {
+        BigDecimal pricePerKgOrTotalCost = priceModelLevel.getRate();
+        if (priceModelLevel.getPricingType() == PricingType.FIXED) {
             return pricePerKgOrTotalCost;
         } else {
-            return pricePerKgOrTotalCost * weightToUse;
+            // Convert weightToUse from double to BigDecimal
+            BigDecimal weightBigDecimal = BigDecimal.valueOf(weightToUse);
+            // Perform multiplication
+            return pricePerKgOrTotalCost.multiply(weightBigDecimal);
         }
     }
 

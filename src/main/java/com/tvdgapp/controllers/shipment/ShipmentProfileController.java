@@ -4,7 +4,7 @@ import com.tvdgapp.apiresponse.ApiDataResponse;
 import com.tvdgapp.dtos.common.IdResponseDto;
 import com.tvdgapp.dtos.shipment.ShippingProfileDto;
 import com.tvdgapp.dtos.shipment.ShippingProfileRequestDto;
-import com.tvdgapp.models.shipment.ShippingProfile;
+import com.tvdgapp.models.shipment.CustomerShippingProfile;
 import com.tvdgapp.services.shipment.ShippingProfileService;
 import com.tvdgapp.utils.ApiResponseUtils;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +24,14 @@ public class ShipmentProfileController {
     private final ShippingProfileService shippingProfileService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('manageShippingProfile')")
+    @PreAuthorize("hasAnyAuthority('manageShippingProfile', 'CUSTOMER')")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createShipmentProfile(@RequestBody ShippingProfileRequestDto profileDto) {
-        ShippingProfile shippingProfile = shippingProfileService.createShippingProfile(profileDto);
-        return ApiResponseUtils.response(HttpStatus.CREATED, new IdResponseDto(shippingProfile.getId()), "Resource created successfully");
+        CustomerShippingProfile customerShippingProfile = shippingProfileService.createShippingProfile(profileDto);
+        return ApiResponseUtils.response(HttpStatus.CREATED, new IdResponseDto(customerShippingProfile.getId()), "Resource created successfully");
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('manageShippingProfile')")
+    @PreAuthorize("hasAnyAuthority('manageShippingProfile', 'CUSTOMER')")
     public ResponseEntity<ApiDataResponse<List<ShippingProfileDto>>> listShipmentProfiles() {
         List<ShippingProfileDto> shippingProfiles = shippingProfileService.getAllShippingProfiles();
         return ApiResponseUtils.response(HttpStatus.CREATED, shippingProfiles, "Resource created successfully");
@@ -39,8 +39,8 @@ public class ShipmentProfileController {
 
     @GetMapping("/{customerId}")
     @PreAuthorize("hasAuthority('manageShippingProfile')")
-    public ResponseEntity<ApiDataResponse<List<ShippingProfile>>> getShippingProfilesByCustomerId(@PathVariable Long customerId) {
-        List<ShippingProfile> shippingProfiles = shippingProfileService.getShippingProfilesByCustomerUserId(customerId);
-        return ApiResponseUtils.response(HttpStatus.CREATED, shippingProfiles, "Resource created successfully");
+    public ResponseEntity<ApiDataResponse<List<CustomerShippingProfile>>> getShippingProfilesByCustomerId(@PathVariable Long customerId) {
+        List<CustomerShippingProfile> customerShippingProfiles = shippingProfileService.getShippingProfilesByCustomerUserId(customerId);
+        return ApiResponseUtils.response(HttpStatus.CREATED, customerShippingProfiles, "Resource created successfully");
     }
 }

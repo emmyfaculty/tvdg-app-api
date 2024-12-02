@@ -6,15 +6,15 @@ import java.util.Locale;
 
 public class SchemaConstant {
 
-    public final static String FELLOWSHIP_SCHEMA = "TVDGAPP";
+    public final static String FELLOWSHIP_SCHEMA = "DLEAPP";
     public static final String DEFAULT_SUPER_ADMINISTRATOR_EMAIL = "aholemmy@gmail.com";
     public static final String DEFAULT_SUPER_ADMINISTRATOR_DEFAULT_PASS = "superadmin";
-    public static final String DEFAULT_APP_NAME = "Tvdg Enterprise Application";
-    public static final String DEFAULT_COMPANY_EMAIL = "aholemmy@gmail.com";//todo change later
+    public static final String DEFAULT_APP_NAME = "Deluxe Link Express";
+    public static final String DEFAULT_COMPANY_EMAIL = "noreply@mydle.com.ng";//todo change later
 
     public static final String DEFAULT_INVOICE_COMPANY_NAME = "Decagon Services Inc";
     public static final String DEFAULT_INVOICE_COMPANY_ADDRESS = "1237 LONGHORN RANCH DRIVE, LEANDER TX, 78641 UNITED STATE OF AMERICA";
-    public static final String DEFAULT_COMPANY_NAME = "Tvdg Enterprise Application";
+    public static final String DEFAULT_COMPANY_NAME = "Deluxe Link Express";
     public static final String DEFAULT_CREATE_PASSWORD_EMAIL_SUBJ = "Create Password Email";
     public static final String DEFAULT_PASSWORD_CREATED_MAIL_SUBJ = "Password Created";
     public static final String DEFAULT_CREATE_ADMIN_USER_EMAIL_SUBJ = "Account created";
@@ -23,7 +23,7 @@ public class SchemaConstant {
     public static final String EMAIL_SUBJ_NOTIFY_ADMIN_USER_NEW_AFFILIATE_USER_EMAIL_SUBJ = "New Affiliate User Account Pending Verification";
     public static final String EMAIL_SUBJ_SEND_AFFILIATE_USER_APPROVAL_EMAIL_SUBJ = "Your Account Has Been Approved";
     public static final String EMAIL_SUBJ_SEND_NOTIFICATION_EMAIL_SUBJ = "Notification";
-    public static final String DEFAULT_PASSWORD_RESET_EMAIL_SUBJ = "Reset Password";
+    public static final String DEFAULT_PASSWORD_RESET_EMAIL_SUBJ = "DLE Reset Password";
     public static final String DEFAULT_FILE_CLAIM_REQUEST_EMAIL_SUBJ = "File Claim Request";
     public static final String DEFAULT_ENGINEER_REQUEST_EMAIL_SUBJ = "Engineer Request";
     public static final String DEFAULT_CANCEL_ENGINEER_REQUEST_LINE_ITEM_EMAIL_SUBJ = "Cancel Engineer Request Line Item";
@@ -62,6 +62,7 @@ public class SchemaConstant {
     public static final String ENGINEER_ASSIGNMENT_REQUEST_TO_EMAIL = "ENGR_ASSIGNMNT_REQ_EMAIL";
     public static final String CANCEL_ENGINEER_REQUEST_LINE_ITEM_TO_EMAIL = "CANCEL_ENGINEER_REQUEST_LINE_ITEM_EMAIL";
     public static final String EMAIL_SUBJ_CREATE_PSSWORD_EMAIL = "CREATE_PSSWORD_MAIL_SUBJ";
+    public static final String EMAIL_SUBJ_RESET_PSSWORD_EMAIL = "DLE_RESET_PSSWORD_MAIL_SUBJ";
     public static final String EMAIL_SUBJ_PASSWORD_CREATED_MAIL = "PASSWORD_CREATED_MAIL_SUBJ";
     public static final String EMAIL_SUBJ_CREATE_ADMIN_USER_EMAIL = "CREATE_ADMIN_USER_EMAIL_SUBJ";
     public static final String EMAIL_SUBJ_CREATE_AFFILIATE_USER_EMAIL = "CREATE_AFFILIATE_USER_EMAIL_SUBJ";
@@ -89,6 +90,7 @@ public class SchemaConstant {
     public static final int LAST_NAME_COL_SIZE = 100;
     public static final int EMAIL_COL_SIZE = 100;
     public static final int PHONE_NO_COL_SIZE = 100;
+    public static final int PHONE_CODE_NO_COL_SIZE = 100;
     public static final int TRAINING_DATA_POINT_TITLE_COL_SIZE = 100;
     public static final int GRADE_SCALE_TITLE_COL_SIZE = 100;
     public static final int WEEK_TITLE_COL_SIZE = 100;
@@ -325,19 +327,15 @@ public class SchemaConstant {
 
     }
 
-    public static final String TABLE_ADMIN_LOGIN_HISTORY="ADMIN_LOGIN_HISTORY";
     public static final String TABLE_ADMIN_USER="ADMIN_USER";
     public static final String TABLE_ACCESS_CODE="ACCESS_CODE";
-//    public static final String TABLE_CUSTOMER_CSE_MAP ="CUSTOMER_CSE_MAP";
     public static final String TABLE_USER_ROLE="USER_ROLE";
     public static final String TABLE_CUSTOMER_CSE_MAP="CUSTOMER_CSE_MAP";
-    public static final String TABLE_CLIENT_LOGIN_HISTORY="CLIENT_LOGIN_HISTORY";
     public static final String TABLE_COUNTRY_CODE="COUNTRY";
     public static final String TABLE_LOCALE_STATES="LOCALE_STATES";
     public static final String TABLE_LOCALE_COUNTRIES="LOCALE_COUNTRIES";
     public static final String TABLE_LOCALE_CITIES="LOCALE_CITIES";
-    public static final String TABLE_STATE="STATE";
-    public static final String TABLE_INTERNATIONAL_COUNTRY ="INTERNATIONAL_COUNTRY";
+    public static final String TABLE_INTERNATIONAL_REGIONS_COUNTRIES ="INTERNATIONAL_REGIONS_COUNTRIES";
     public static final String TABLE_INTERNATIONAL_REGIONS ="INTERNATIONAL_REGIONS";
     public static final String TABLE_CUSTOMER_REFRESH_TOKEN="User_REFRESH_TOKEN";
     public static final String TABLE_AFFILIATES="AFFILIATES";
@@ -346,12 +344,10 @@ public class SchemaConstant {
     public static final String TABLE_CUSTOMER_USERS="CUSTOMER_USERS";
     public static final String TABLE_USERS="USERS";
     public static final String TABLE_SHIPMENT ="SHIPMENT";
+    public static final String TABLE_CANCELLATION ="CANCELLATION";
     public static final String TABLE_WALLET ="WALLET";
-    public static final String TABLE_TRANSACTION ="TRANSACTION";
-    public static final String TABLE_SHIPMENT_PROFILE ="SHIPMENT_PROFILE";
+    public static final String CUSTOMER_SHIPMENT_PROFILE ="CUSTOMER_SHIPMENT_PROFILE";
     public static final String TABLE_FILE_CLAIMS ="FILE_CLAIMS";
-    public static final String TABLE_SERVICE_OPTION ="SERVICE_OPTION";
-    public static final String TABLE_WITHDRAWAL ="WITHDRAWAL";
     public static final String TABLE_COMMISSION_RATE = "commission_rates";
     public static final String TABLE_PRODUCT_ITEM ="PRODUCT_ITEM";
     public static final String TABLE_CUSTOMER_SHIPMENT_MAP ="CUSTOMER_SHIPMENT_MAP";
@@ -359,49 +355,26 @@ public class SchemaConstant {
     public static final String TABLE_PRICING_LEVELS = "PRICING_LEVELS";
     public static final String TABLE_LOCAL_PICKUP_LOCATION = "LOCAL_PICKUP_LOCATION";
     public static final String TABLE_PICKUP_STATE = "PICKUP_STATE";
-    public static final String TABLE_INTERNATIONAL_SHIPPING_PRICE = "INTERNATION_SHIPPING_PRICE";
+    public static final String TABLE_INTERNATIONAL_SHIPPING_PRICING = "INTERNATIONAL_SHIPPING_PRICING";
     public static final String TABLE_NATIONAL_WIDE_REGION = "NATION_WIDE_REGION";
     public static final String TABLE_NATIONAL_WIDE_STATE = "NATION_WIDE_STATE";
     public static final String TABLE_NATIONAL_WIDE_CITY = "NATION_WIDE_CITY";
-    public static final String TABLE_SHIPPING_SERVICE = "SHIPPING_SERVICE";
+    public static final String TABLE_SHIPPING_SERVICES = "SHIPPING_SERVICES";
 
     public static final String TABLE_PERMISSIONS="PERMISSIONS";
     public static final String TABLE_ROLES="ROLES";
-    public static final String TABLE_ROLE_PERMISSIONS="ROLES_PERMISSIONS";
     public static final String TABLE_SENDER_DETAILS="SHIPMENT_SENDER";
     public static final String TABLE_RECEIVER_DETAILS="SHIPMENT_RECEIVER";
     public static final String TABLE_AFFILIATE_BENEFITED_RECORDS="AFFILIATE_BENEFITED_RECORDS";
 
-    public static final String TABLE_SUBSCRIPTION_REQUESTS="SUBSCRIPTION_REQUESTS";
     public static final String TABLE_SYSTEM_CONFIGURATION="SYSTEM_CONFIGURATION";
-    public static final String TABLE_EXPECTED_DELIVERY_DAY_INTERNATION ="INTERNATION_EXPECTED_DELIVERY_DAY";
-    public static final String TABLE_TECH_STACKS="TECH_STACKS";
+    public static final String TABLE_EXPECTED_DELIVERY_DAY_INTERNATION ="INTERNATIONAL_EXPECTED_DELIVERY_TIMELINES";
     public static final String TABLE_TOKEN_BLACKLIST="TOKEN_BLACKLIST";
-    public static final String TABLE_INVOICE="INVOICE";
-    public static final String TABLE_DOCUMENT="DOCUMENT";
     public static final String TABLE_QUOTE="QUOTE";
     public static final String TABLE_API_SESSION="API_SESSIONS";
     public static final String TABLE_NOTIFICATION="NOTIFICATION";
     public static final String TABLE_MAILINGLIST="MAILINGLIST";
     public static final String TABLE_EMAILSUBSCRIPTION="EMAILSUBSCRIPTION";
-
-
-
-    //schema const
-    public static final int PROJECT_NAME_COL_SIZE = 255;
-    public static final int REVIEW_COL_SIZE = 3000;
-    public static final int REQUEST_ENGINEER_COMMENT_COL_SIZE = 3000;
-    public static final int PROJECT_DESC_COL_SIZE = 1000;
-    public static final int TECHNOLOGY_USED_COL_SIZE = 255;
-    public static final int PROJECT_LINK_COL_SIZE = 255;
-    public static final int INSTITUTION_COL_SIZE = 255;
-    public static final int WORK_EXPERIENCE_DESC_COL_SIZE = 1000;
-    public static final int COURSE_COL_SIZE = 255;
-    public static final int GRADE_COL_SIZE = 255;
-    public static final int QUALIFICATION_COL_SIZE = 255;
-    public static final int WORK_EXPERIENCE_COMPANY_NAME_COL_SIZE = 255;
-    public static final int WORK_EXPERIENCE_ROL_COL_SIZE = 255;
-    public static final int NICK_NAME_COL_SIZE = 100;
 
 
 }

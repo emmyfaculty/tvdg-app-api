@@ -26,7 +26,8 @@ public class CustomerUserPopulator extends AbstractDataPopulator<CustomerUserDto
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setEmail(source.getEmail());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhoneCode(source.getPhoneCode());
+        target.setPhone(source.getPhone());
         target.setCompanyName(source.getCompanyName());
         target.setCompanyContactName(source.getCompanyContactName());
         target.setCompanyEmail(source.getCompanyEmail());
@@ -60,6 +61,7 @@ public class CustomerUserPopulator extends AbstractDataPopulator<CustomerUserDto
         target.setNatureOfBusiness(source.getNatureOfBusiness());
 
         target.setStatus(UserStatus.valueOf(source.getStatus()));
+        target.setEnableOtp(false);
         return target;
     }
 

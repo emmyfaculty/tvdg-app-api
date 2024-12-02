@@ -29,6 +29,7 @@ public class SystemConfiguration extends TvdgAppEntity<Long, SystemConfiguration
     @Column(length=100)
     @Nullable
     private String configurationName;
+    @Column(length = 1024)  // or another suitable length
     @Nullable
     private String value;
 

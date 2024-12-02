@@ -26,36 +26,36 @@ public class LocaleState extends TvdgAppEntity<Integer, LocaleState> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "state_name", nullable = false)
+    @Column(name = "state_name", nullable = false, length = 191)
     private String stateName;
 
-    @Column(name = "capital_name")
+    @Column(name = "capital_name", length = 191)
     private String capitalName;
 
-    @Column(name = "country_id", nullable = false)
-    private String countryId;
+    @Column(name = "country_id", nullable = false, length = 191)
+    private Integer countryId;
 
-    @Column(name = "country_code", nullable = false)
+    @Column(name = "country_code", nullable = false, length = 191)
     private String countryCode;
 
-    @Column(name = "fips_code", nullable = false)
+    @Column(name = "fips_code", nullable = false, length = 191)
     private String fipsCode;
 
-    @Column(name = "iso2", nullable = false)
+    @Column(name = "iso2", nullable = false, length = 191)
     private String iso2;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, length = 191)
     private String createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", length = 191)
     private String updatedAt;
 
-    @Column(name = "flag")
+    @Column(name = "flag", length = 191)
     private String flag;
 
-    @Column(name = "wikiDataId")
+    @Column(name = "wikiDataId", length = 191)
     private String wikiDataId;
 
 }

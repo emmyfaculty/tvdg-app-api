@@ -16,7 +16,6 @@ import com.tvdgapp.models.user.User;
 import com.tvdgapp.models.user.UserStatus;
 import com.tvdgapp.models.user.admin.AccessCode;
 import com.tvdgapp.models.user.admin.AdminUser;
-import com.tvdgapp.models.user.admin.GenerateCode;
 import com.tvdgapp.populator.user.AdminUserPopulator;
 import com.tvdgapp.repositories.User.UserRepository;
 import com.tvdgapp.repositories.User.admin.AccessCodeRepository;
@@ -32,8 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -97,7 +94,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
     public AdminUser createUser(AdminUserRequestDto adminUserRequestDto) {
 
         if (this.userEmailTaken(adminUserRequestDto.getEmail())) {
-            throw new DuplicateEntityException(ADMIN_USER, adminUserRequestDto.getEmail());
+            throw new DuplicateEntityException(ADMIN_USER, "email", adminUserRequestDto.getEmail());
         }
 
         AdminUser adminUser = this.createAdminUserModelEntity(adminUserRequestDto);
@@ -106,7 +103,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
 
         String plainPassword = this.createUserPassword(adminUser);
 
-        this.sendCreateAdminUserEmail(adminUser, plainPassword);
+        this.sendCreateAdminUserEmail(adminUser, plainPassword, adminUserRequestDto.getLoginUrl());
 
         var savedAdminUser = this.saveAdminUser(adminUser);
 
@@ -306,7 +303,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
     private void checkUniqueUserEmailIfEmailHasChanged(AdminUserRequestDto dto, AdminUser adminUser) {
         if (!dto.getEmail().equals(adminUser.getEmail())) {
             if (this.userEmailTaken(dto.getEmail(), adminUser.getId())) {
-                throw new DuplicateEntityException(ADMIN_USER, dto.getEmail());
+                throw new DuplicateEntityException(ADMIN_USER, "email", dto.getEmail());
             }
         }
     }
@@ -333,7 +330,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
         dto.setEmail(adminUser.getEmail());
         dto.setFirstName(adminUser.getFirstName());
         dto.setLastName(adminUser.getLastName());
-        dto.setPhone(adminUser.getTelephoneNumber());
+        dto.setPhone(adminUser.getPhone());
         dto.setStatus(adminUser.getStatus().name());
 
         AccessCode accessCode = accessCodeRepository.findByUserId(adminUser.getId()).orElse(null);
@@ -350,7 +347,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
         dto.setEmail(adminUser.getEmail());
         dto.setFirstName(adminUser.getFirstName());
         dto.setLastName(adminUser.getLastName());
-        dto.setPhone(adminUser.getTelephoneNumber());
+        dto.setPhone(adminUser.getPhone());
         AccessCode accessCode = accessCodeRepository.findByUserId(adminUser.getId()).orElse(null);
         String accessCodeDto = accessCode.getAccessCode() != null ? accessCode.getAccessCode() : null;
         dto.setAccessCode(accessCodeDto);
@@ -413,9 +410,9 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
         }
     }
 
-    private void sendCreateAdminUserEmail(AdminUser adminUser, String plainPassword) {
+    private void sendCreateAdminUserEmail(AdminUser adminUser, String plainPassword, String loginUrl) {
         try {
-            this.emailTemplateUtils.sendCreateAdminUserEmail(adminUser, plainPassword);
+            this.emailTemplateUtils.sendCreateAdminUserEmail(adminUser, plainPassword, loginUrl);
         } catch (Exception e) {
             LOGGER.error("Cannot send create admin user email", e);
         }
@@ -449,7 +446,7 @@ public class AdminUserServiceImpl extends TvdgEntityServiceImpl<Long, AdminUser>
         AdminUser adminUser=optionalAdminUser.get();
         adminUser.setFirstName(dto.getFirstName());
         adminUser.setLastName(dto.getLastName());
-        adminUser.setTelephoneNumber(dto.getPhone());
+        adminUser.setPhone(dto.getPhone());
 
         this.updateUser(adminUser);
 

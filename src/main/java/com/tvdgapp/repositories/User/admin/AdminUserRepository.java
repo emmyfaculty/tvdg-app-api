@@ -15,7 +15,7 @@ public interface AdminUserRepository extends JpaRepository<AdminUser,Long> /*Adm
 
     boolean existsByEmail(String email);
 
-    @Query("select new com.tvdgapp.dtos.user.admin.ListAdminUserDto(u.id,CONCAT(u.lastName,' ', u.firstName),u.email,u.telephoneNumber,u.status,u.auditSection.dateCreated) from AdminUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
+    @Query("select new com.tvdgapp.dtos.user.admin.ListAdminUserDto(u.id,CONCAT(u.lastName,' ', u.firstName),u.email,u.phone,u.status,u.auditSection.dateCreated) from AdminUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
     Page<ListAdminUserDto> listAdminUsers(Pageable pageable);
 
     @Query("select u from AdminUser u left join fetch u.roles r where u.id =:userId and u.auditSection.delF='0'")

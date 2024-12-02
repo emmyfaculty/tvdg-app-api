@@ -13,17 +13,18 @@ import jakarta.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CountryDTO {
-    private Integer id;
+    @NotNull(message = "Country name is required")
+    @Size(min = 1, max = 100, message = "Country name must be between 1 and 100 characters")
+    private String countryName;
 
-    @NotNull
-    @Size(min = 2, max = 50)
-    private String name;
-
-    @Size(max = 3)
-    private String iso3;
-
-    @Size(max = 2)
+    @NotNull(message = "ISO2 code is required")
+    @Size(min = 2, max = 2, message = "ISO2 code must be 2 characters")
     private String iso2;
 
+    @NotNull(message = "ISO3 code is required")
+    @Size(min = 3, max = 3, message = "ISO3 code must be 3 characters")
+    private String iso3;
+
+    @NotNull(message = "Region ID is required")
     private Integer regionId;
 }

@@ -15,13 +15,13 @@ import java.util.Optional;
 public interface RiderRepository extends JpaRepository<RiderUser, Long> {
 
     boolean existsByEmail(String email);
-    Optional<RiderUser> findByTelephoneNumber(String phone);
+    Optional<RiderUser> findByPhone(String phone);
 
     Optional<RiderUser> findRiderUserById(Long userId);
 
     Optional<RiderUser> findByEmail(String email);
 
-    @Query("select new com.tvdgapp.dtos.rider.ListRiderUserDto(u.id,u.title,CONCAT(u.lastName,' ', u.firstName),u.email,u.telephoneNumber,u.status,u.auditSection.dateCreated) from RiderUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
+    @Query("select new com.tvdgapp.dtos.rider.ListRiderUserDto(u.id,u.title,CONCAT(u.lastName,' ', u.firstName),u.email,u.phone,u.status,u.auditSection.dateCreated) from RiderUser u WHERE  u.auditSection.delF <> '1' order by u.lastName asc")
     Page<ListRiderUserDto> listRiderUsers(Pageable pageable);
     @Query("select u from RiderUser u where u.id = ?1 and u.auditSection.delF='0'")
     Optional<RiderUser> findRiderUserDetail(Long userId);

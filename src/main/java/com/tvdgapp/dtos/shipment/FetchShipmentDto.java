@@ -1,8 +1,10 @@
 package com.tvdgapp.dtos.shipment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.tvdgapp.models.shipment.*;
-import com.tvdgapp.models.wallet.ShipmentPayment;
+import com.tvdgapp.models.shipment.CustomerType;
+import com.tvdgapp.models.shipment.ServiceType;
+import com.tvdgapp.models.shipment.ShipmentType;
+import com.tvdgapp.models.shipment.VerificationStatus;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -10,21 +12,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude
-public class ListShipmentDto {
+public class FetchShipmentDto {
 
     private Long id;
     private String trackingNumber;
     private String shipmentRef;
     private CustomerType customerType;
-    private ShipmentType shipmentType;
-    private ServiceType serviceType;
+    private ServiceType shipmentType;
+    private String serviceType;
     private SenderDetailsDto senderDetails;
     private ReceiverDetailsDto receiverDetails;
     private int totalNumberOfPackages;
@@ -36,7 +37,7 @@ public class ListShipmentDto {
     private BigDecimal totalShipmentAmount;
     private Set<ProductItemDto> productItems;
     private String referralCode;
-    private String servicePortfolio;
+    private String serviceName;
     private String shipmentStatus;
     private String paymentStatus;
     private BigDecimal totalProductItemsValue;
@@ -46,8 +47,6 @@ public class ListShipmentDto {
     private VerificationStatus verificationStatus;
     private String verifiedBy;
     private AuditSectionDto auditSection;
-    private Long shipmentCount;
-    private List<ShipmentPayment> shipmentPayments;
     @Temporal(TemporalType.DATE)
     private String shippedDate;
     @Temporal(TemporalType.TIMESTAMP)

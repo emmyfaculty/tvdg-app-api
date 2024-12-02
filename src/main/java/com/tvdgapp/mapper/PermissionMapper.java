@@ -13,8 +13,8 @@ public class PermissionMapper {
         dto.setPermission(permission.getPermission());
         dto.setName(permission.getName());
         dto.setDescription(permission.getDescription());
-        dto.setPermissionType(permission.getPermissionType());
-        dto.setPermissionGroup(permission.getPermissionGroup());
+//        dto.setPermissionType(permission.getPermissionType());
+//        dto.setPermissionGroup(permission.getPermissionGroup());
         // You can map other fields as needed
 
         return dto;

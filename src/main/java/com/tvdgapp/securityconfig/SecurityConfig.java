@@ -48,12 +48,39 @@ public class SecurityConfig {
         config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With"));
         config.setAllowedOrigins(List.of("http://127.0.0.1:5500"));
         config.setAllowedOrigins(List.of("http://localhost:5500"));
+        config.setAllowedOrigins(List.of("https://192.168.64.3/"));
+                // Allow any origin (optional, be cautious with credentials)
+        config.addAllowedOriginPattern("*");
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "X-Requested-With"));
+//
+//        // Add specific allowed origins
+//        config.setAllowedOrigins(List.of(
+//                "http://127.0.0.1:5500",
+//                "http://localhost:5500",
+////                "https://192.168.64.3:5500",
+//                "https://192.168.64.3"
+//        ));
+//
+//        // Allow any origin (optional, be cautious with credentials)
+//        config.addAllowedOriginPattern("*");
+//
+//        config.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", config);
+//        return source;
+//    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -71,13 +98,6 @@ public class SecurityConfig {
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(
-                "/swagger-ui/**", "/v3/api-docs/**"
-        );
     }
 
 }

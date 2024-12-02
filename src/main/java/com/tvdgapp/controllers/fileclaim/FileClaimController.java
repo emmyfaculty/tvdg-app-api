@@ -32,7 +32,7 @@ public class FileClaimController {
 
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
-    @PreAuthorize("hasAuthority('manageFileClaim')")
+    @PreAuthorize("hasAuthority('FileClaim:create')")
     public ResponseEntity<ApiDataResponse<FileClaimResponseDto>> createFileClaims(@Valid @RequestBody FileClaimRequestDto fileClaimRequestDto) {
 //        validateFileUploads(receiptFileUpload);
         FileClaimResponseDto fileClaims1 = this.fileClaimService.createFileClaim(fileClaimRequestDto);
@@ -40,7 +40,7 @@ public class FileClaimController {
     }
 
     @PutMapping("/{fileClaimsId}/receipt")
-    @PreAuthorize("hasAuthority('manageFileClaim')")
+    @PreAuthorize("hasAuthority('FileClaim:create')")
     public ResponseEntity<ApiDataResponse<FileUrlDto>> uploadShipmentReceipt(@PathVariable Long fileClaimsId, @RequestPart(value = "receipt_file_upload") MultipartFile receiptFileUpload) {
         validateFileUploads(receiptFileUpload);
         String fileUrl = this.fileClaimService.uploadShipmentReceipt(fileClaimsId, receiptFileUpload).orElseThrow(() ->

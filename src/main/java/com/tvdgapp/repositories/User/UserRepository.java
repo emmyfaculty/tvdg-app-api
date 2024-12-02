@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User,Long> /*AdminUserCust
     @Query("UPDATE User u SET u.lastLogin = :lastLogin WHERE u.id = :userId")
     void updateLastLogin(Long userId, Long lastLogin);
 
-    Optional<User> findByTelephoneNumber(String phoneNumber);
+    Optional<User> findByPhone(String phoneNumber);
 
-    Optional<User> findAuthUserByTelephoneNumber(String phoneNumber);
+    Optional<User> findAuthUserByPhone(String phoneNumber);
 }

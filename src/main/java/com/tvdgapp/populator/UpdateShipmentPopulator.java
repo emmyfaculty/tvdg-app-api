@@ -163,12 +163,13 @@ public class UpdateShipmentPopulator extends AbstractDataPopulator<UpdateShipmen
 
         // Calculate the base cost
         double convertedWeightToUse = convertWeightToKg(weightToUse, String.valueOf(source.getUnits()));
-        double baseCost = calculateBaseCost(priceModelLevel, convertedWeightToUse);
-        target.setTransportCharge(BigDecimal.valueOf(baseCost));
+        BigDecimal baseCost = calculateBaseCost(priceModelLevel, convertedWeightToUse);
+        target.setTransportCharge(baseCost);
 
-        BigDecimal vat = BigDecimal.valueOf(baseCost * 0.075);
-//        BigDecimal totalShipmentAmount = baseCost + vat + packagingFee + totalCategoryDocumentAmount;
-        BigDecimal totalShipmentAmount = BigDecimal.valueOf(baseCost)
+        BigDecimal vatRate = BigDecimal.valueOf(0.075); // Convert the double to BigDecimal
+        BigDecimal vat = baseCost.multiply(vatRate); // Perform the multiplication
+//        double totalShipmentAmount = baseCost + vat + packagingFee + totalCategoryDocumentAmount;
+        BigDecimal totalShipmentAmount = baseCost
                 .add(vat)
                 .add(packagingFee)
                 .add(totalCategoryDocumentAmount);
@@ -247,11 +248,11 @@ public class UpdateShipmentPopulator extends AbstractDataPopulator<UpdateShipmen
         return weight;
     }
 
-    private double calculateBaseCost(PriceModelLevel priceModelLevel, double weightToUse) {
-        if (priceModelLevel.getWeightBandEnd() == null) {
-            return priceModelLevel.getPrice() * weightToUse;
+    private BigDecimal calculateBaseCost(PriceModelLevel priceModelLevel, double weightToUse) {
+        if (priceModelLevel.getWeightTo() == null) {
+            return priceModelLevel.getRate().multiply(BigDecimal.valueOf(weightToUse));
         } else {
-            return priceModelLevel.getPrice();
+            return priceModelLevel.getRate();
         }
     }
 

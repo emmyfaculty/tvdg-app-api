@@ -1,6 +1,6 @@
 spring:
   application:
-    name: tvdg-app-api
+    name: dle-app-api
 
 ---
 spring:
@@ -12,7 +12,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.MySQLDialect
         jdbc:
           batch_size: 30
         order_updates: true
@@ -23,7 +23,7 @@ spring:
 server:
   port: ${PORT:8080}
   servlet:
-    context-path: /${CONTEXT_PATH:tvdgapp}
+    context-path: /${CONTEXT_PATH:dle}
 
 api:
   url-domain: ${APP_URL_DOMAIN:http://localhost:${server.port}${server.servlet.context-path}}

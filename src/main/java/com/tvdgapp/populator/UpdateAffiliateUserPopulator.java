@@ -25,7 +25,7 @@ public class UpdateAffiliateUserPopulator extends AbstractDataPopulator<UpdateAf
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setEmail(source.getEmail());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhone(source.getPhone());
         target.setUsername(source.getUsername());
         target.setPostalCode(source.getPostalCode());
         target.setIdentificationNumber(source.getIdentificationNumber());

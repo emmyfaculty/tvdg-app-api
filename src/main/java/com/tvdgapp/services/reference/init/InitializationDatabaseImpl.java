@@ -270,7 +270,7 @@ public class InitializationDatabaseImpl implements InitializationDatabase {
                     state.setId(stateDto.getId());
                     state.setStateName(stateDto.getState_name());
                     state.setCapitalName(stateDto.getCapital_name());
-                    state.setCountryId(stateDto.getCountry_id());
+                    state.setCountryId(Integer.valueOf(stateDto.getCountry_id()));
                     state.setCountryCode(stateDto.getCountry_code());
                     state.setFipsCode(stateDto.getFips_code());
                     state.setIso2(stateDto.getIso2());

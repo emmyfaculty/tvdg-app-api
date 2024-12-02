@@ -16,4 +16,5 @@ public class AdminUserRequestDto extends UserDto {
     Collection<Integer> roles;
     @NotNull(message = "Generate code option is required")
     private String generateCode; // "yes" or "no"
+    protected  String loginUrl;
 }

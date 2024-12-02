@@ -26,10 +26,11 @@ public class UpdateRiderUserPopulator extends AbstractDataPopulator<UpdateRiderU
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setEmail(source.getEmail());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhone(source.getPhone());
         if (StringUtils.isNotEmpty(source.getDateOfBirth())) {
             target.setDateOfBirth(TvdgAppDateUtils.formatStringToDate(source.getDateOfBirth(), DateConstants.DATE_INPUT_FORMAT));
         }
+        target.setEmployeeId(source.getEmployeeId());
         return target;
     }
 

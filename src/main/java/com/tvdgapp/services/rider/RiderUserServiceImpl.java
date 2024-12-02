@@ -56,13 +56,23 @@ public class RiderUserServiceImpl extends TvdgEntityServiceImpl<Long, RiderUser>
     @Transactional
     public RiderUser createRiderUser(RiderUserDto requestDto)  {
 
+//        if (this.userEmailTaken(requestDto.getEmail())) {
+//            throw new DuplicateEntityException(RIDER_USER, requestDto.getEmail());
+//        }
+
+//        // Check if the phone number is already taken
+//        if (this.userPhoneTaken(requestDto.getPhone())) {
+//            throw new DuplicateEntityException("Phone number " + requestDto.getPhone() + " already exist");
+//        }
+
+        // Check if the email is already taken
         if (this.userEmailTaken(requestDto.getEmail())) {
-            throw new DuplicateEntityException(RIDER_USER, requestDto.getEmail());
+            throw new DuplicateEntityException(AFFILIATE_USER.name(), "email", requestDto.getEmail());
         }
 
-        // Check if the phone number is already taken
+        // Check if the username is already taken
         if (this.userPhoneTaken(requestDto.getPhone())) {
-            throw new DuplicateEntityException("Phone number " + requestDto.getPhone() + " already exist");
+            throw new DuplicateEntityException(AFFILIATE_USER.name(), "username", requestDto.getPhone());
         }
 
         RiderUser user = this.createRiderUserModelEntity(requestDto);
@@ -153,9 +163,11 @@ public class RiderUserServiceImpl extends TvdgEntityServiceImpl<Long, RiderUser>
         dto.setFirstName(riderUser.getFirstName());
         dto.setLastName(riderUser.getLastName());
         dto.setProfilePic(riderUser.getProfilePic());
-        dto.setPhone(riderUser.getTelephoneNumber());
+        dto.setPhoneCode(riderUser.getPhoneCode());
+        dto.setPhone(riderUser.getPhone());
         dto.setStatus(riderUser.getStatus().name());
         dto.setDateOfBirth(String.valueOf(riderUser.getDateOfBirth()));
+        dto.setEmployeeId(riderUser.getEmployeeId());
 
         return dto;
     }
@@ -266,7 +278,7 @@ public class RiderUserServiceImpl extends TvdgEntityServiceImpl<Long, RiderUser>
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
-        dto.setPhone(user.getTelephoneNumber());
+        dto.setPhone(user.getPhone());
         dto.setStatus(user.getStatus().name());
         dto.setDateOfBirth(String.valueOf(user.getDateOfBirth()));
         // Set other necessary fields
@@ -278,7 +290,7 @@ public class RiderUserServiceImpl extends TvdgEntityServiceImpl<Long, RiderUser>
     }
 
     private boolean userPhoneTaken(String phone) {
-        return repository.findByTelephoneNumber(phone).isPresent();
+        return repository.findByPhone(phone).isPresent();
     }
 
     private RiderUser createRiderUserModelEntity(RiderUserDto riderUserDto) {

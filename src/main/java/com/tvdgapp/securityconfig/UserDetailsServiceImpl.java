@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + login));
         } else {
             // Phone number login
-            user = userRepository.findAuthUserByTelephoneNumber(login)
+            user = userRepository.findAuthUserByPhone(login)
                     .orElseThrow(() -> new UsernameNotFoundException("No user found with phone number: " + login));
         }
 

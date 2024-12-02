@@ -43,7 +43,7 @@ public class WalletService extends TvdgEntityServiceImpl<Long, Wallet> {
 
     private static final Logger logger = LoggerFactory.getLogger(WalletService.class);
 
-        public Wallet createWalletForUser(Long userId, String currency) {
+        public Wallet createWalletForUser(Long userId) {
         logger.debug("Creating wallet for user ID {}", userId);
 
             if (walletRepository.existsByUserId(userId)) {
@@ -55,7 +55,7 @@ public class WalletService extends TvdgEntityServiceImpl<Long, Wallet> {
 
         Wallet wallet = new Wallet();
         wallet.setUserId(userId);
-        wallet.setCurrency(Currency.valueOf(currency));
+        wallet.setCurrency(Currency.NGN);
         wallet.setWalletKey(walletKey);
         Wallet savedWallet = walletRepository.save(wallet);
 

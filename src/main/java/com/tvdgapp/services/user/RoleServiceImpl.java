@@ -109,7 +109,7 @@ public class RoleServiceImpl extends TvdgEntityServiceImpl<Integer, Role> implem
         /*if (!isAdminRole(role.get())) {
             throw new UnAuthorizeEntityAccessException(ROLE);
         }*/
-        return this.convertToDetailDto(role, PermissionType.ADMIN);
+        return this.convertToDetailDto(role);
     }
 
     @Override
@@ -186,7 +186,7 @@ public class RoleServiceImpl extends TvdgEntityServiceImpl<Integer, Role> implem
         return role.getRoleType() != null && role.getRoleType().equals(RoleType.ADMIN);
     }
 
-    private RoleDetailDto convertToDetailDto(Role role, PermissionType permissionType) {
+    private RoleDetailDto convertToDetailDto(Role role) {
 
         RoleDetailDto roleDetailDto = new RoleDetailDto();
         roleDetailDto.setId(role.getId());
@@ -208,7 +208,7 @@ public class RoleServiceImpl extends TvdgEntityServiceImpl<Integer, Role> implem
         }*/
         Map<String, ListPermissionDto> holdMap=new HashMap<>();
         for (Permission perm : allPermissions) {
-            var listPermDto=holdMap.computeIfAbsent(perm.getPermissionGroup(),permGrp-> new ListPermissionDto(permGrp,new ArrayList<>()));
+            var listPermDto=holdMap.computeIfAbsent(perm.getPermission(),permGrp-> new ListPermissionDto(permGrp,new ArrayList<>()));
             listPermDto.getPermissions().add(roleDetailDto.new PermissionDTO(perm.getPermission(),perm.getName(), rolePerms.contains(perm.getPermission()),perm.getDescription()));
         }
         roleDetailDto.setPerms(holdMap.values());

@@ -20,7 +20,6 @@ import com.tvdgapp.services.AuthService;
 import com.tvdgapp.utils.AuthUtils;
 import com.tvdgapp.utils.CodeGeneratorUtils;
 import com.tvdgapp.utils.EmailTemplateUtils;
-import eu.bitwalker.useragentutils.UserAgent;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,7 +29,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.tvdgapp.exceptions.EntityType.USER;
 
@@ -267,16 +264,15 @@ public class UserAuthServiceImpl implements AuthService {
             // Retrieve the user by login
             User user = getUserByLogin(login);
 
-
             // Ensure roles are initialized
             user.getRoles().size();
 
             // Logging to trace the roles
             logger.debug("User roles: " + user.getRoles());
 
-            // Check if the user is a rider and if OTP verification is required
-            if (user.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase("RIDER"))) {
-                logger.debug("User has RIDER role");
+            // Check if OTP verification is enabled for the user
+            if (user.isEnableOtp()) {
+                logger.debug("OTP verification required");
 
                 // Generate and send OTP
                 String otp = CodeGeneratorUtils.generateOTP();
@@ -288,7 +284,7 @@ public class UserAuthServiceImpl implements AuthService {
                 return new LoginResponseDto("OTP verification required. Please check your phone for the OTP.");
             }
 
-            logger.debug("User does not have RIDER role");
+            logger.debug("OTP verification not required");
 
             // Generate JWT token
             String token = tokenProvider.generateToken(authentication);
@@ -303,8 +299,7 @@ public class UserAuthServiceImpl implements AuthService {
             user.setLastLogin(System.currentTimeMillis() / 1000L); // Unix timestamp
             userRepository.save(user);
 
-
-                        // Extract additional session details
+            // Extract additional session details
             String deviceId = request.getHeader("Device-Id");
             String deviceType = getDeviceType(request.getHeader("User-Agent"));
             String ipAddress = request.getRemoteAddr();
@@ -326,6 +321,7 @@ public class UserAuthServiceImpl implements AuthService {
             apiSession.setExpiresAt(new Date(System.currentTimeMillis() + 3600000)); // 1 hour session duration
             apiSession.setActive(true);
             apiSessionRepository.save(apiSession);
+
             // Check if the user is a customer
             Optional<CustomerUser> customerUserOpt = customerUserRepository.findCustomerUserById(user.getId());
             Optional<Wallet> walletOpt = walletRepository.findByUserId(user.getId());
@@ -352,6 +348,114 @@ public class UserAuthServiceImpl implements AuthService {
             }
         }
     }
+
+
+//    @Override
+//    @Transactional
+//    public LoginResponseDto login(String login, String password, HttpServletRequest request) {
+//        try {
+//            // Authenticate the user
+//            Authentication authentication = authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(login, password)
+//            );
+//
+//            // Retrieve the user by login
+//            User user = getUserByLogin(login);
+//
+//
+//            // Ensure roles are initialized
+//            user.getRoles().size();
+//
+//            // Logging to trace the roles
+//            logger.debug("User roles: " + user.getRoles());
+//
+////            // Generate and send OTP for all users
+////            String otp = CodeGeneratorUtils.generateOTP();
+////            user.setOtp(otp);
+////            userRepository.save(user);
+////            sendOTP(user, otp);
+////
+////            // Respond to the client to verify OTP
+////            return new LoginResponseDto("OTP verification required. Please check your phone for the OTP.");
+//
+//            // Check if the user is a rider and if OTP verification is required
+//            if (user.getRoles().stream().anyMatch(role -> role.getName().equalsIgnoreCase("RIDER"))) {
+//                logger.debug("User has RIDER role");
+//
+//                // Generate and send OTP
+//                String otp = CodeGeneratorUtils.generateOTP();
+//                user.setOtp(otp);
+//                userRepository.save(user);
+//                sendOTP(user, otp);
+//
+//                // Respond to the client to verify OTP
+//                return new LoginResponseDto("OTP verification required. Please check your phone for the OTP.");
+//            }
+//
+//            logger.debug("User does not have RIDER role");
+//
+//            // Generate JWT token
+//            String token = tokenProvider.generateToken(authentication);
+//            if (isEmptyToken(token)) {
+//                throw new TvdgException.UnAuthorizeException("Invalid username/password:");
+//            }
+//
+//            // Create a refresh token
+//            UserRefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getEmail());
+//
+//            // Update last login timestamp
+//            user.setLastLogin(System.currentTimeMillis() / 1000L); // Unix timestamp
+//            userRepository.save(user);
+//
+//
+//                        // Extract additional session details
+//            String deviceId = request.getHeader("Device-Id");
+//            String deviceType = getDeviceType(request.getHeader("User-Agent"));
+//            String ipAddress = request.getRemoteAddr();
+//            String location = getLocationFromIp(ipAddress);
+//            String os = getOperatingSystem(request.getHeader("User-Agent"));
+//            String userAgent = request.getHeader("User-Agent");
+//
+//            // Store session information
+//            ApiSession apiSession = new ApiSession();
+//            apiSession.setUserId(user.getId());
+//            apiSession.setToken(token);
+//            apiSession.setDeviceId(deviceId);
+//            apiSession.setDeviceType(DeviceType.valueOf(deviceType));
+//            apiSession.setIpAddress(ipAddress);
+//            apiSession.setLocation(location);
+//            apiSession.setOs(os);
+//            apiSession.setUserAgent(userAgent);
+//            apiSession.setCreatedAt(new Date());
+//            apiSession.setExpiresAt(new Date(System.currentTimeMillis() + 3600000)); // 1 hour session duration
+//            apiSession.setActive(true);
+//            apiSessionRepository.save(apiSession);
+//            // Check if the user is a customer
+//            Optional<CustomerUser> customerUserOpt = customerUserRepository.findCustomerUserById(user.getId());
+//            Optional<Wallet> walletOpt = walletRepository.findByUserId(user.getId());
+//
+//            // Create the response object
+//            LoginResponseDto authResponse = createLoginResponse(
+//                    user,
+//                    customerUserOpt.orElse(null),
+//                    walletOpt.orElse(null),
+//                    token
+//            );
+//            authResponse.setAuthorities(AuthUtils.buildAuthorities(authentication));
+//            authResponse.setRefreshToken(refreshToken.getToken());
+//
+//            return authResponse;
+//
+//        } catch (Exception e) {
+//            if (e instanceof BadCredentialsException) {
+//                throw new TvdgException.InvalidCredentialsException("Invalid username/password:");
+//            } else if (e instanceof DisabledException) {
+//                throw new TvdgException.AccountDisabledException("Account disabled");
+//            } else {
+//                throw e;
+//            }
+//        }
+//    }
 
 
     private String extractDeviceId(HttpServletRequest request) {
@@ -496,7 +600,7 @@ public class UserAuthServiceImpl implements AuthService {
             return userRepository.findByEmail(login)
                     .orElseThrow(() -> new InvalidCredentialsException("User with supplied credential does not exist"));
         } else {
-            return userRepository.findByTelephoneNumber(login)
+            return userRepository.findByPhone(login)
                     .orElseThrow(() -> new InvalidCredentialsException("User with supplied credential does not exist"));
         }
     }
@@ -518,8 +622,12 @@ public class UserAuthServiceImpl implements AuthService {
 //            }
 //        }
 
-        User user = userRepository.findByTelephoneNumber(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+//        User user = userRepository.findByTelephoneNumber(username)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Retrieve the user by login
+        User user = getUserByLogin(username);
+
 
         if (otp.equals(user.getOtp())) {
             user.setOtp(null); // Clear OTP after verification
@@ -560,12 +668,28 @@ public class UserAuthServiceImpl implements AuthService {
             apiSession.setActive(true);
             apiSessionRepository.save(apiSession);
 
-            // Create response
-            LoginResponseDto authResponse = createLoginResponse(user, token);
-            authResponse.setAuthorities(userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList()));
+//            // Create response
+//            LoginResponseDto authResponse = createLoginResponse(user, token);
+//            authResponse.setAuthorities(userDetails.getAuthorities().stream()
+//                    .map(GrantedAuthority::getAuthority)
+//                    .collect(Collectors.toList()));
+//            authResponse.setRefreshToken(refreshToken.getToken());
+//            return authResponse;
+
+                        // Check if the user is a customer
+            Optional<CustomerUser> customerUserOpt = customerUserRepository.findCustomerUserById(user.getId());
+            Optional<Wallet> walletOpt = walletRepository.findByUserId(user.getId());
+
+            // Create the response object
+            LoginResponseDto authResponse = createLoginResponse(
+                    user,
+                    customerUserOpt.orElse(null),
+                    walletOpt.orElse(null),
+                    token
+            );
+            authResponse.setAuthorities(AuthUtils.buildAuthorities(authentication));
             authResponse.setRefreshToken(refreshToken.getToken());
+
             return authResponse;
         }
         throw new RuntimeException("Invalid OTP.");

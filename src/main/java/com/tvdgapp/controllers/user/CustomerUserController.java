@@ -43,7 +43,7 @@ public class CustomerUserController {
     @ApiOperation(value = "Create user", notes = "authorities[manageAdminUser]", authorizations = {@Authorization(value = "JWT") })
     @PostMapping("/signup")
     @ResponseStatus(code = HttpStatus.CREATED)
-    @PreAuthorize("hasAnyAuthority('manageCustomer', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('Customer:create', 'ADMIN')")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createCustomer(@Valid @RequestBody CustomerUserDto customerUserDto) {
         CustomerUser customerUser = this.service.createCustomerUser(customerUserDto);
         return ApiResponseUtils.response(HttpStatus.CREATED, new IdResponseDto(customerUser.getId()), "Resource created successfully");

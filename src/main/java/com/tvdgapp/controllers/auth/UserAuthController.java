@@ -40,7 +40,6 @@ public class UserAuthController {
     public ResponseEntity<ApiDataResponse<LoginResponseDto>> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) throws Exception {
         LoginResponseDto loginResponseDto = this.userAuthService.login(loginRequest.getUsername(),loginRequest.getPassword(), request);
         return ApiResponseUtils.response(HttpStatus.OK, loginResponseDto, "Login successfully");
-
     }
 
     @PostMapping("/changepassword")

@@ -8,17 +8,13 @@ import com.tvdgapp.dtos.wallet.WalletDto;
 import com.tvdgapp.models.user.Role;
 import com.tvdgapp.models.user.User;
 import com.tvdgapp.models.user.customer.CustomerUser;
-import com.tvdgapp.models.user.customer.PricingCategory;
 import com.tvdgapp.models.wallet.Wallet;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AuthUtils {
@@ -37,7 +33,7 @@ public class AuthUtils {
         System.out.println("Token: " + token);
 
         UserDto userDto;
-            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getTelephoneNumber(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin());
+            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin(), user.getUserType());
         CustomerDtoResponse customerUserDto = null;
         if (customerUser != null) {
             String dateOfBirth = customerUser.getDateOfBirth() != null ? customerUser.getDateOfBirth().toString() : "null";
@@ -60,12 +56,12 @@ public class AuthUtils {
 
     public static LoginResponseDto createLoginResponse(User user, String token) {
         UserDto userDto;
-            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getTelephoneNumber(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin());
+            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin(), user.getUserType());
         return new LoginResponseDto(userDto, token);
     }
     public static LoginResponseDto createLoginResponse(User user) {
         UserDto userDto;
-            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getTelephoneNumber(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin());
+            userDto=new UserDto(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhone(), user.getProfilePic(), user.getStatus().name(), user.getLastLogin(), user.getUserType());
         return new LoginResponseDto(userDto);
     }
 
@@ -95,6 +91,11 @@ public class AuthUtils {
         });
         return authorities;
     }
+
+//    public static String encodeCredentials(String username, String password) {
+//        String credentials = username + ":" + password;
+//        return Base64.getEncoder().encodeToString(credentials.getBytes());
+//    }
 
 //    Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 //        for (Role role : user.getRoles()) {

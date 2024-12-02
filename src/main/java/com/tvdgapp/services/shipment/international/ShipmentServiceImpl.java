@@ -6,19 +6,22 @@ import com.tvdgapp.exceptions.ResourceNotFoundException;
 import com.tvdgapp.exceptions.ShipmentNotFoundException;
 import com.tvdgapp.exceptions.TvdgException;
 import com.tvdgapp.models.common.audit.AuditSection;
+import com.tvdgapp.models.reference.countrycode.LocaleCountry;
+import com.tvdgapp.models.reference.countrycode.LocaleState;
 import com.tvdgapp.models.shipment.*;
 import com.tvdgapp.models.shipment.pricingcaculation.ExpectedDeliveryDay;
 import com.tvdgapp.models.shipment.pricingcaculation.ShippingService;
+import com.tvdgapp.models.user.User;
 import com.tvdgapp.models.user.customer.CustomerUser;
 import com.tvdgapp.models.wallet.ShipmentPayment;
 import com.tvdgapp.populator.ShipmentPopulator;
 import com.tvdgapp.populator.ShippingRatePopulator;
 import com.tvdgapp.populator.UpdateShipmentPopulator;
 import com.tvdgapp.repositories.User.CustomerUserRepository;
-import com.tvdgapp.repositories.shipment.CustomerShipmentMapRepository;
-import com.tvdgapp.repositories.shipment.PackageCategoryRepository;
-import com.tvdgapp.repositories.shipment.ProductItemRepository;
-import com.tvdgapp.repositories.shipment.ShipmentRepository;
+import com.tvdgapp.repositories.User.UserRepository;
+import com.tvdgapp.repositories.reference.country.LocaleCountryRepository;
+import com.tvdgapp.repositories.reference.state.StateRepository;
+import com.tvdgapp.repositories.shipment.*;
 import com.tvdgapp.repositories.shipment.pricecaculation.PickupLocationRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.PickupStateRepository;
 import com.tvdgapp.repositories.shipment.pricecaculation.ShippingServiceRepository;
@@ -35,6 +38,7 @@ import com.tvdgapp.services.wallet.WalletService;
 import com.tvdgapp.utils.FilePathUtils;
 import com.tvdgapp.utils.FileUploadValidatorUtils;
 import com.tvdgapp.utils.UserInfoUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +54,8 @@ import com.tvdgapp.models.shipment.ShipmentStatus;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,6 +80,11 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
     private final PickupStateRepository pickupStateRepository;
     private final PickupLocationRepository pickupLocationRepository;
     private  final CustomerShipmentMapRepository customerShipmentMapRepository;
+    private final LocaleCountryRepository countryRepository;
+    private final StateRepository stateRepository;
+    private final ShipmentStatusHistoryRepository shipmentStatusHistoryRepository;
+    private final HttpServletRequest httpServletRequest;
+    private final UserRepository userRepository;
     @Transactional
     @Override
     public InternationalShipmentResponseDto createShipment(ShipmentRequestDto request, MultipartFile paymentProof) {
@@ -114,6 +125,59 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
         //todo:process asynchronously
         this.storeFiles(shipment, paymentProof);
 
+        // Step 3: Update shipment status history if the shipment status is "Pending"
+        if (shipment.getStatus().equals(ShipmentStatus.PENDING.name())) {
+            ShipmentStatusHistory statusHistory = new ShipmentStatusHistory();
+            statusHistory.setShipment(shipment);
+            statusHistory.setStatus(ShipmentStatus.PENDING.name());
+            statusHistory.setStatusDescription("Shipment is awaiting processing.");
+//            statusHistory.setTimestamp(LocalDateTime.now());
+            statusHistory.setIsFinalStatus(false);
+            statusHistory.setCreatedAt(LocalDateTime.now());
+
+            if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails) {
+                SecuredUserInfo userInfo = (SecuredUserInfo) this.userInfoUtil.authenticatedUserInfo();
+                CustomerUser user = (CustomerUser) userInfo.getUser();
+                statusHistory.setUpdatedBy(user.getEmail());
+                statusHistory.setUpdatedByRole("Customer");
+            } else {
+                statusHistory.setUpdatedBy("Guest User");
+                statusHistory.setUpdatedByRole("Guest");
+            }
+
+//            // Step 4: Geocode the location to get latitude and longitude
+//            String location = request.getLocation();
+//            if (location != null) {
+//                GeoLocation geoLocation = geocodingService.getCoordinates(location); // Assume this service exists
+//                statusHistory.setLocation(location);
+//                statusHistory.setLatitude(geoLocation.getLatitude());
+//                statusHistory.setLongitude(geoLocation.getLongitude());
+//            }
+
+            // Extract deviceId (User-Agent) and ipAddress
+            String deviceId = httpServletRequest.getHeader("User-Agent");
+            String ipAddress = httpServletRequest.getRemoteAddr();
+
+            statusHistory.setDeviceId(deviceId);
+            statusHistory.setIpAddress(ipAddress);
+            statusHistory.setLocation("Tv Deluxe Office");
+
+            // Determine update source
+            String updateSource;
+                if (deviceId != null && deviceId.contains("Mobile")) {
+                    updateSource = "MOBILE_APP";
+                } else {
+                    updateSource = "WEB_PORTAL";
+                }
+
+                statusHistory.setUpdateSource(updateSource);
+                statusHistory.setComments("This is a newly created shipment");
+
+            // Persist status history
+            shipmentStatusHistoryRepository.save(statusHistory);
+        }
+
+
         // Persist the shipment object to the database
 //        return ShipmentMapper.toEntity(shipment);
         return convertToResponseDTO(shipment);
@@ -129,18 +193,89 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
         return convertToResponseDTO(shipment);
 
     }
+//    @Override
+//    public void updateShipmentStatusById(Long id, String status) {
+//        Shipment shipment = shipmentRepository.findById(id)
+//                .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
+//        shipment.setStatus(status);
+//
+//        shipmentRepository.save(shipment);
+//
+//        if (status.equals(ShipmentStatus.COMPLETED.name()) && shipment.getReferralCode() != null && !shipment.getReferralCode().isEmpty()) {
+//            affiliateUserService.processReferral(id);
+//        }
+//
+//    }
+
     @Override
-    public void updateShipmentStatusById(Long id, String status) {
+    public void updateShipmentStatusById(Long id, ShipmentStatusUpdateRequestDto requestDto) {
+        // Retrieve the shipment by ID
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Shipment not found"));
-        shipment.setStatus(status);
 
+        // Update the shipment status
+        shipment.setStatus(requestDto.getStatus());
+
+        // Save the updated shipment entity
         shipmentRepository.save(shipment);
 
-        if (status.equals(ShipmentStatus.COMPLETED.name()) && shipment.getReferralCode() != null && !shipment.getReferralCode().isEmpty()) {
-            affiliateUserService.processReferral(id);
+//        // Retrieve location, deviceId, and ipAddress from the context (e.g., request or session)
+//        String location = shipment.getDestinationAddress().getCity(); // Example: Location could be city or any provided location
+//        GeoLocation geoLocation = geocodingService.getCoordinates(location); // Get latitude/longitude from location
+
+        // Extract deviceId and ipAddress from request context (if available)
+        String deviceId = httpServletRequest.getHeader("User-Agent"); // Assuming you have access to the request object
+        String ipAddress = httpServletRequest.getRemoteAddr();
+
+        // Get authenticated user details
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String updatedBy = "Guest"; // Default value for guest users
+        String updatedByRole = "GUEST";
+        Long userId = null;
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            SecuredUserInfo userInfo = (SecuredUserInfo) authentication.getPrincipal();
+            userId = userInfo.getUserId();
+            updatedBy = userInfo.getUsername(); // Adjust as needed for your user object
+
+            // Fetch the user role from the database or user service
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            updatedByRole = user.getRoles().toString(); // Assuming `getRole()` returns the user's role
         }
 
+        // Determine update source
+        String updateSource = "WEB_PORTAL"; // Example static value
+        if (deviceId != null && deviceId.contains("Mobile")) {
+            updateSource = "MOBILE_APP";
+        }
+
+        // Create and save the ShipmentStatusHistory
+        ShipmentStatusHistory statusHistory = new ShipmentStatusHistory();
+        statusHistory.setShipment(shipment);
+        statusHistory.setStatus(requestDto.getStatus());
+        statusHistory.setStatusDescription("Shipment status updated to " + requestDto.getStatus());
+//        statusHistory.setTimestamp(LocalDateTime.now());
+        statusHistory.setLocation(requestDto.getLocation());
+//        statusHistory.setLatitude(geoLocation.getLatitude());
+//        statusHistory.setLongitude(geoLocation.getLongitude());
+        statusHistory.setDeviceId(deviceId);
+        statusHistory.setIpAddress(ipAddress);
+        statusHistory.setUpdatedBy(updatedBy);
+        statusHistory.setUpdatedByRole(updatedByRole);
+        statusHistory.setUpdateSource(updateSource);
+        statusHistory.setIsFinalStatus(ShipmentStatus.COMPLETED.name().equals(requestDto.getStatus()));
+        statusHistory.setCreatedAt(LocalDateTime.now());
+        statusHistory.setUpdatedAt(LocalDateTime.now());
+        statusHistory.setTsupdated(LocalDateTime.now());
+        statusHistory.setTsupdated(LocalDateTime.now());
+
+        shipmentStatusHistoryRepository.save(statusHistory);
+
+        // Process referral if the shipment is completed and has a referral code
+        if (ShipmentStatus.COMPLETED.name().equals(requestDto.getStatus()) && shipment.getReferralCode() != null && !shipment.getReferralCode().isEmpty()) {
+            affiliateUserService.processReferral(id);
+        }
     }
     @Override
     public InternationalShipmentResponseDto createShippingRate(ShippingRateRequestDto request) {
@@ -264,6 +399,7 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
 
         responseDto.setId(shipment.getId());
         responseDto.setTrackingNumber(shipment.getTrackingNumber());
+        responseDto.setShipmentRef(shipment.getShipmentRef());
 
         // Convert sender details
         // Fetch SenderDetails by shipmentId
@@ -275,9 +411,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             senderDto.setFirstName(senderDetails.getFirstName());
             senderDto.setLastName(senderDetails.getLastName());
             senderDto.setCompanyName(senderDetails.getCompanyName());
-            senderDto.setCountry(senderDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = senderDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            senderDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = senderDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            senderDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            senderDto.setCountry(senderDetails.getCountry());
             senderDto.setAddress(senderDetails.getAddress());
-            senderDto.setState(senderDetails.getState());
+//            senderDto.setState(senderDetails.getState());
             senderDto.setCity(senderDetails.getCity());
             senderDto.setZipcode(senderDetails.getZipcode());
             senderDto.setEmail(senderDetails.getEmail());
@@ -294,9 +441,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             receiverDto.setFirstName(receiverDetails.getFirstName());
             receiverDto.setLastName(receiverDetails.getLastName());
             receiverDto.setCompanyName(receiverDetails.getCompanyName());
-            receiverDto.setCountry(receiverDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = receiverDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            receiverDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = receiverDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            receiverDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            receiverDto.setCountry(receiverDetails.getCountry());
             receiverDto.setAddress(receiverDetails.getAddress());
-            receiverDto.setState(receiverDetails.getState());
+//            receiverDto.setState(receiverDetails.getState());
             receiverDto.setCity(receiverDetails.getCity());
             receiverDto.setZipcode(receiverDetails.getZipcode());
             receiverDto.setEmail(receiverDetails.getEmail());
@@ -327,6 +485,10 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
 
         // Convert product items
         Set<ProductItemDto> productItemDtos = new HashSet<>();
+
+        // Create a set to keep track of added category names
+        Set<String> addedCategoryNames = new HashSet<>();
+
         BigDecimal totalProductItemValue = BigDecimal.valueOf(0.0);
         double totalProductItemWeight = 0.0;
         BigDecimal packageCategoryAmount = BigDecimal.valueOf(0.0);
@@ -349,6 +511,14 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             if (productItem.getManufacturingCountry() != null) {
                 productItemDto.setManufacturingCountry(productItem.getManufacturingCountry());
             }
+            // Only add the CategoryAmount if the category name hasn't been added yet
+            if (!addedCategoryNames.contains(productItem.getPackageCategory() != null)) {
+                productItemDto.setPackageCategoryName(productItem.getPackageCategory().getCategoryName());
+                productItemDto.setPackageCategoryAmount(productItem.getPackageCategory().getCategoryAmount());
+                packageCategoryAmount = packageCategoryAmount.add(productItem.getPackageCategory().getCategoryAmount());
+                addedCategoryNames.add(productItem.getPackageCategory().getCategoryName());
+            }
+
             if (productItem.getPackageCategory() != null) {
                 productItemDto.setPackageCategoryName(productItem.getPackageCategory().getCategoryName());
                 productItemDto.setPackageCategoryAmount(productItem.getPackageCategory().getCategoryAmount());
@@ -361,6 +531,7 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
         responseDto.setTotalProductItemsValue(totalProductItemValue);
         responseDto.setTotalProductItemsWeight(totalProductItemWeight);
         responseDto.setTotalPackageCategoryAmount(packageCategoryAmount);
+        responseDto.setDocumentCharge(shipment.getDocumentCharge());
 
         responseDto.setReferralCode(shipment.getReferralCode());
 
@@ -541,9 +712,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             senderDto.setFirstName(senderDetails.getFirstName());
             senderDto.setLastName(senderDetails.getLastName());
             senderDto.setCompanyName(senderDetails.getCompanyName());
-            senderDto.setCountry(senderDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = senderDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            senderDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = senderDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            senderDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            senderDto.setCountry(senderDetails.getCountry());
             senderDto.setAddress(senderDetails.getAddress());
-            senderDto.setState(senderDetails.getState());
+//            senderDto.setState(senderDetails.getState());
             senderDto.setCity(senderDetails.getCity());
             senderDto.setZipcode(senderDetails.getZipcode());
             senderDto.setEmail(senderDetails.getEmail());
@@ -560,9 +742,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             receiverDto.setFirstName(receiverDetails.getFirstName());
             receiverDto.setLastName(receiverDetails.getLastName());
             receiverDto.setCompanyName(receiverDetails.getCompanyName());
-            receiverDto.setCountry(receiverDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = receiverDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            receiverDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = receiverDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            receiverDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            receiverDto.setCountry(receiverDetails.getCountry());
             receiverDto.setAddress(receiverDetails.getAddress());
-            receiverDto.setState(receiverDetails.getState());
+//            receiverDto.setState(receiverDetails.getState());
             receiverDto.setCity(receiverDetails.getCity());
             receiverDto.setZipcode(receiverDetails.getZipcode());
             receiverDto.setEmail(receiverDetails.getEmail());
@@ -675,7 +868,7 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
                 String finalShipmentCountry = shipmentCountry;
                 Optional<ExpectedDeliveryDay> matchingDeliveryDay = shippingService.getExpectedDeliveryDays().stream()
                         .filter(expectedDeliveryDay -> expectedDeliveryDay.getRegion().getCountries().stream()
-                                .anyMatch(country -> country.getName().equalsIgnoreCase(finalShipmentCountry)))
+                                .anyMatch(country -> country.getIso2().equalsIgnoreCase(finalShipmentCountry)))
                         .findFirst();
 
                 if (matchingDeliveryDay.isPresent()) {
@@ -800,9 +993,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             senderDetailsDto.setFirstName(senderDetails.getFirstName());
             senderDetailsDto.setLastName(senderDetails.getLastName());
             senderDetailsDto.setCompanyName(senderDetails.getCompanyName());
-            senderDetailsDto.setCountry(senderDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = senderDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            senderDetailsDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = senderDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            senderDetailsDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            senderDetailsDto.setCountry(senderDetails.getCountry());
             senderDetailsDto.setAddress(senderDetails.getAddress());
-            senderDetailsDto.setState(senderDetails.getState());
+//            senderDetailsDto.setState(senderDetails.getState());
             senderDetailsDto.setCity(senderDetails.getCity());
             senderDetailsDto.setZipcode(senderDetails.getZipcode());
             senderDetailsDto.setEmail(senderDetails.getEmail());
@@ -818,9 +1022,20 @@ public class ShipmentServiceImpl extends TvdgEntityServiceImpl<Long, Shipment> i
             receiverDetailsDto.setFirstName(receiverDetails.getFirstName());
             receiverDetailsDto.setLastName(receiverDetails.getLastName());
             receiverDetailsDto.setCompanyName(receiverDetails.getCompanyName());
-            receiverDetailsDto.setCountry(receiverDetails.getCountry());
+
+            // Set the country name based on the ISO2 code
+            String countryCode = receiverDetails.getCountry();
+            LocaleCountry country = countryRepository.findByIso2(countryCode);
+            receiverDetailsDto.setCountry(country != null ? country.getCountryName() : countryCode);
+
+            // Set the state name based on the state ISO2 code and country code
+            String stateCode = receiverDetails.getState();
+            LocaleState state = stateRepository.findByIso2AndCountryCode(stateCode, countryCode);
+            receiverDetailsDto.setState(state != null ? state.getStateName() : stateCode);
+
+//            receiverDetailsDto.setCountry(receiverDetails.getCountry());
             receiverDetailsDto.setAddress(receiverDetails.getAddress());
-            receiverDetailsDto.setState(receiverDetails.getState());
+//            receiverDetailsDto.setState(receiverDetails.getState());
             receiverDetailsDto.setCity(receiverDetails.getCity());
             receiverDetailsDto.setZipcode(receiverDetails.getZipcode());
             receiverDetailsDto.setEmail(receiverDetails.getEmail());

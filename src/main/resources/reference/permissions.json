@@ -1,291 +1,432 @@
 [
   {
-    "permission": "customerShipmentManagement",
-    "name": "Manage Shipment by Customer",
-    "description": "can create,update,view,list and delete shipments",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Shipment"
+    "permission":"RiderList",
+    "name":"List Riders",
+    "description":null
   },
   {
-    "permission": "adminShipmentManagement",
-    "name": "Manage Shipment by Admin",
-    "description": "view all shipments, list by id, by userId, list by status,list and delete shipments",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Shipment"
+    "permission":"Rider:view",
+    "name":"View Rider Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageShippingService",
-    "name": "Manage Service Option",
-    "description": "can create,update,view, and delete Shipping Service",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Service Option"
+    "permission":"Rider:update",
+    "name":"Update Rider Profile\/Details",
+    "description":null
   },
   {
-    "permission": "createShippingProfile",
-    "name": "Create Shipping Profile",
-    "description": "can create shipping profile",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Shipping Profile"
+    "permission":"Rider:delete",
+    "name":"Delete Rider Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageShippingProfile",
-    "name": "fetch and list Shipping Profile by id",
-    "description": "can create shipping profile",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipping Profile"
+    "permission":"CustomerList",
+    "name":"List Customer",
+    "description":null
   },
   {
-    "permission": "managePackageCategory",
-    "name": "Manage Package Category",
-    "description": "can create,update,view,list and delete Package Category",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Package Category"
+    "permission":"Customer:view",
+    "name":"View Customer Profile\/Details",
+    "description":null
   },
   {
-    "permission": "viewShipmentServiceOption",
-    "name": "Manage Service Option",
-    "description": "can view, and list Service Options",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Service Option"
+    "permission":"Customer:update",
+    "name":"Update Customer Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageShipmentServiceOption",
-    "name": "Manage Service Option",
-    "description": "can can create, update, delete view, and list Service Options",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Service Option"
+    "permission":"Customer:delete",
+    "name":"Delete Customer Profile\/Details",
+    "description":null
   },
   {
-    "permission": "viewShipment",
-    "name": "View Shipment",
-    "description": "can only view and list Shipments",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment "
+    "permission":"AffiliateList",
+    "name":"List Affiliate",
+    "description":null
   },
   {
-    "permission": "customerUserManagement",
-    "name": "Customer User Management",
-    "description": "can update,view,list and retrieve customer details,can also manage customer",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Customer"
+    "permission":"Affiliate:view",
+    "name":"View Affiliate Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageCustomer",
-    "name": " Manage Customer",
-    "description": "can create,view,list and retrieve customer details,can also manage customer",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Customer"
+    "permission":"Affiliate:update",
+    "name":"Update Affiliate Profile\/Details",
+    "description":null
   },
   {
-    "permission": "viewCustomer",
-    "name": "View Customer details",
-    "description": "can only list and view customer, can also view customers",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Customer"
+    "permission":"Affiliate:delete",
+    "name":"Delete Affiliate Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageAdminUser",
-    "name": "Manage Admin User",
-    "description": "can create,update,view,list and activate/deactivate admin user account",
-    "permissionType": "ADMIN",
-    "permissionGroup": "User"
+    "permission":"AdminList",
+    "name":"List Admin",
+    "description":null
   },
   {
-    "permission": "manageAdmin",
-    "name": "Manage Admin User",
-    "description": "can update,view admin user account",
-    "permissionType": "ADMIN",
-    "permissionGroup": "User"
+    "permission":"Admin:view",
+    "name":"View Admin Profile\/Details",
+    "description":null
   },
   {
-    "permission": "viewAdminUser",
-    "name": "View Admin User",
-    "description": "can only view and list, and update admin users",
-    "permissionType": "ADMIN",
-    "permissionGroup": "User"
+    "permission":"Admin:update",
+    "name":"Update Admin Profile\/Details",
+    "description":null
   },
   {
-    "permission": "manageRole",
-    "name": "Manage Role",
-    "description": "can create,update,view and delete role",
-    "permissionType": "ADMIN",
-    "permissionGroup": "User"
+    "permission":"Admin:delete",
+    "name":"Delete Admin Profile\/Details",
+    "description":null
   },
   {
-    "permission": "viewRole",
-    "name": "View Role",
-    "description": "can only view and list roles",
-    "permissionType": "ADMIN",
-    "permissionGroup": "User"
+    "permission":"ShipmentList",
+    "name":"List Shipment",
+    "description":null
   },
   {
-    "permission": "manageCoreConfiguration",
-    "name": "Manage Core Configurations",
-    "description": "can update system configuration",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Settings"
+    "permission":"Shipment:view:self",
+    "name":"View own shipments",
+    "description":null
   },
   {
-    "permission": "manageAffiliate",
-    "name": "Manage Affiliate",
-    "description": "can create,update,view,list by id",
-    "permissionType": "AFFILIATE",
-    "permissionGroup": "Affiliate"
+    "permission":"Shipment:view",
+    "name":"View Shipment Details",
+    "description":null
   },
   {
-    "permission": "affiliateUserManagement",
-    "name": "Affiliate User Management",
-    "description": "can only view and list all affiliates, approve affiliate, delete, activate and deactivate affiliates account",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Affiliate"
+    "permission":"Shipment:update",
+    "name":"Update Shipment Details",
+    "description":null
   },
   {
-    "permission": "manageCustomer",
-    "name": "Manage Customer",
-    "description": "can create,delete,view and list customer,can also upload bulk and download bulk customers",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Customer"
+    "permission":"Shipment:delete",
+    "name":"Delete Shipment Details",
+    "description":null
   },
   {
-    "permission": "customerUserManagement",
-    "name": "Customer User Management",
-    "description": "can update,view and list customer, fetch user details",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Customer"
+    "permission":"Wallet:fund",
+    "name":"Fund Wallet",
+    "description":null
   },
   {
-    "permission": "riderUserManagement",
-    "name": "Rider User Management",
-    "description": "can create,delete,view and list riders,can also upload bulk and download bulk riders",
-    "permissionType": "RIDER",
-    "permissionGroup": "Rider"
+    "permission":"Wallet:view",
+    "name":"View Wallet Details",
+    "description":null
   },
   {
-    "permission": "manageRider",
-    "name": "Manage Rider",
-    "description": "can update,view and list rider, fetch user details",
-    "permissionType": "RIDER",
-    "permissionGroup": "Rider"
+    "permission":"User:create",
+    "name":"Create User",
+    "description":null
   },
   {
-    "permission": "viewCustomerProfile",
-    "name": "View Customer Profile",
-    "description": "can only view and list customers",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Customer"
+    "permission":"Customer:create",
+    "name":"Create Customer",
+    "description":null
   },
   {
-    "permission": "fundWallet",
-    "name": "Fund User Wallet",
-    "description": "can only fund wallet for customers",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Wallet"
+    "permission":"Service:Create",
+    "name":"Create Service Types",
+    "description":null
   },
   {
-    "permission": "manageWallet",
-    "name": "Manage User Wallet",
-    "description": "can withdraw, check balance and make payment from wallet",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Wallet"
+    "permission":"Service:List",
+    "name":"List Service Types",
+    "description":null
   },
   {
-    "permission": "assignShipment",
-    "name": "Manage Shipment Assignment",
-    "description": "can assign, update, list and delete shipment assignment to Riders.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Service:update",
+    "name":"Update Service Type",
+    "description":null
   },
   {
-    "permission": "manageShipment",
-    "name": "Manage Shipment",
-    "description": "can create, update, view, list all shipment by userId and delete shipment.",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Shipment"
+    "permission":"Service:view",
+    "name":"View Service Type Details",
+    "description":null
   },
   {
-    "permission": "viewShipment",
-    "name": "View Shipment",
-    "description": "can view, list all shipment and delete shipment.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Service:delete",
+    "name":"Delete Service Type",
+    "description":null
   },
   {
-    "permission": "viewShipmentBYUser",
-    "name": "View Shipment by user",
-    "description": "can view, list all shipment by userId and delete shipment.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Product:Category:create",
+    "name":"Create Product Category",
+    "description":null
   },
   {
-    "permission": "adminShipmentManagement",
-    "name": "View Shipment and manage shipment activities",
-    "description": "can view, list all shipment by userId and delete shipment.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Product:Category:List",
+    "name":"List Product Category",
+    "description":null
   },
   {
-    "permission": "manageShippingProfile",
-    "name": "View Shipment and manage shipment activities",
-    "description": "can create, update, view, list all shipment by userId and delete shipping profile.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Product:Category:view",
+    "name":"View Product Category Details",
+    "description":null
   },
   {
-    "permission": "managePricingLevel",
-    "name": "manage pricing level",
-    "description": "can create, update, view, list all and delete pricing level.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Product:Category:update",
+    "name":"Update Product Category",
+    "description":null
   },
   {
-    "permission": "manageShippingPrice",
-    "name": "manage shipping price",
-    "description": "can create, update, view, list all and delete pricing level.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipping Price"
+    "permission":"Product:Category:delete",
+    "name":"Delete Product Category",
+    "description":null
   },
   {
-    "permission": "viewShippingPrice",
-    "name": "view shipping price",
-    "description": "view, list all pricing level.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipping Price"
+    "permission":"Pricing:Model:create",
+    "name":"Create Pricing Model",
+    "description":null
   },
   {
-    "permission": "manageQuote",
-    "name": "can create, update, delete and view quote",
-    "description": "view, list all pricing level.",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "Quote"
+    "permission":"Pricing:Model:list",
+    "name":"List Pricing Model",
+    "description":null
   },
   {
-    "permission": "manageFileClaim",
-    "name": "Manage FileClaims",
-    "description": "can create, update, delete and view FileClaim.",
-    "permissionType": "CUSTOMER",
-    "permissionGroup": "FileClaims"
+    "permission":"Pricing:Model:view",
+    "name":"View Pricing Model Details",
+    "description":null
   },
   {
-    "permission": "managePickupLocation",
-    "name": "Manage Pickup Location",
-    "description": "can create, update, delete and view pick up location.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "PickupLocation"
+    "permission":"Pricing:Model:update",
+    "name":"Update Pricing Model",
+    "description":null
   },
   {
-    "permission": "manageExpectedDeliveryDays",
-    "name": "Manage Expected Delivery Days",
-    "description": "can create, update, delete and view Expected Delivery days.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "ExpectedDeliveryDays"
+    "permission":"Pricing:Model:delete",
+    "name":"Delete Pricing Model",
+    "description":null
   },
   {
-    "permission": "manageShipmentAssignment",
-    "name": "Manage Shipment Assignment",
-    "description": "can create, update, delete and view shipment assignment.",
-    "permissionType": "ADMIN",
-    "permissionGroup": "Shipment"
+    "permission":"Region:create",
+    "name":"Create Region",
+    "description":null
+  },
+  {
+    "permission":"Regions:list",
+    "name":"List Regions",
+    "description":null
+  },
+  {
+    "permission":"Region:view",
+    "name":"View Region Details",
+    "description":null
+  },
+  {
+    "permission":"Region:update",
+    "name":"Update Region",
+    "description":null
+  },
+  {
+    "permission":"Region:delete",
+    "name":"Delete Region",
+    "description":null
+  },
+  {
+    "permission":"Role:create",
+    "name":"Create Role",
+    "description":null
+  },
+  {
+    "permission":"Roles:List",
+    "name":"List Roles",
+    "description":null
+  },
+  {
+    "permission":"Role:view",
+    "name":"View Role Details",
+    "description":null
+  },
+  {
+    "permission":"Role:update",
+    "name":"Update Roles",
+    "description":null
+  },
+  {
+    "permission":"Roles:delete",
+    "name":"Delete Roles",
+    "description":null
+  },
+  {
+    "permission":"Permission:create",
+    "name":"Create Permissions",
+    "description":null
+  },
+  {
+    "permission":"Permissions:List",
+    "name":"List Permissions",
+    "description":null
+  },
+  {
+    "permission":"Permission:view",
+    "name":"View Permission Details",
+    "description":null
+  },
+  {
+    "permission":"Permission:update",
+    "name":"Update Permission",
+    "description":null
+  },
+  {
+    "permission":"Permission:delete",
+    "name":"Delete Permission",
+    "description":null
+  },
+  {
+    "permission":"Customer:CSE:Assigned",
+    "name":"Customers Assigned to CSE",
+    "description":null
+  },
+  {
+    "permission":"Rider:Shipment:assigned",
+    "name":"Shipment Assigned to Rider",
+    "description":null
+  },
+  {
+    "permission":"Customer:assign:CSE",
+    "name":"Assign Customer to CSE",
+    "description":null
+  },
+  {
+    "permission":"Shipment:assign:Rider",
+    "name":"Assign Shipment to Rider",
+    "description":null
+  },
+  {
+    "permission":"FileClaim:create",
+    "name":"Create FileClaims",
+    "description":null
+  },
+  {
+    "permission":"FileClaim:view",
+    "name":"View FileClaim Details",
+    "description":null
+  },
+  {
+    "permission":"FileClaims:list",
+    "name":"List FileClaims",
+    "description":null
+  },
+  {
+    "permission":"FileClaim:update",
+    "name":"Update FileClaim Details",
+    "description":null
+  },
+  {
+    "permission":"FileClaim:delete",
+    "name":"Delete FileClaim Details",
+    "description":null
+  },
+  {
+    "permission":"Quote:create",
+    "name":"Create Quote",
+    "description":null
+  },
+  {
+    "permission":"Quote:list",
+    "name":"List Quote",
+    "description":null
+  },
+  {
+    "permission":"Quote:view",
+    "name":"View Quote Details",
+    "description":null
+  },
+  {
+    "permission":"Quote:update",
+    "name":"Update Quote Details",
+    "description":null
+  },
+  {
+    "permission":"Quote:delete",
+    "name":"Delete Quote Details",
+    "description":null
+  },
+  {
+    "permission":"Country:create",
+    "name":"Create Country",
+    "description":null
+  },
+  {
+    "permission":"Country:list",
+    "name":"List Country",
+    "description":null
+  },
+  {
+    "permission":"Country:view",
+    "name":"View Country Details",
+    "description":null
+  },
+  {
+    "permission":"Country:update",
+    "name":"Update Country Details",
+    "description":null
+  },
+  {
+    "permission":"Country:delete",
+    "name":"Delete Country Details",
+    "description":null
+  },
+  {
+    "permission":"State:create",
+    "name":"Create State",
+    "description":null
+  },
+  {
+    "permission":"States:list",
+    "name":"List States",
+    "description":null
+  },
+  {
+    "permission":"State:view",
+    "name":"View state Details",
+    "description":null
+  },
+  {
+    "permission":"State:update",
+    "name":"Update State Details",
+    "description":null
+  },
+  {
+    "permission":"State:delete",
+    "name":"Delete State Details",
+    "description":null
+  },
+  {
+    "permission":"City:create",
+    "name":"Create City",
+    "description":null
+  },
+  {
+    "permission":"Cities:list",
+    "name":"List Cities",
+    "description":null
+  },
+  {
+    "permission":"City:view",
+    "name":"View City Details",
+    "description":null
+  },
+  {
+    "permission":"City:update",
+    "name":"Update City Details",
+    "description":null
+  },
+  {
+    "permission":"City:delete",
+    "name":"Delete City Details",
+    "description":null
+  },
+  {
+    "permission":"Shipment:create",
+    "name":"Create Shipment",
+    "description":null
+  },
+  {
+    "permission":"Shipment:update:status",
+    "name":"Shipment Status Update  ",
+    "description":null
   }
 ]
-
-

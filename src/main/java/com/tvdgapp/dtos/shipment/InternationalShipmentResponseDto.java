@@ -14,6 +14,7 @@ import java.util.Set;
 public class InternationalShipmentResponseDto {
     private Long id;
     private String trackingNumber;
+    private String shipmentRef;
 //    private CustomerType customerType;
 //    private ShipmentType shipmentType;
 //    private ServiceType serviceType;
@@ -27,6 +28,7 @@ public class InternationalShipmentResponseDto {
     private BigDecimal packagingFee;
     private BigDecimal totalShipmentAmount;
     private Set<ProductItemDto> productItems;
+    private BigDecimal documentCharge;
     private String referralCode;
     private String serviceOption;
     private String shipmentStatus;

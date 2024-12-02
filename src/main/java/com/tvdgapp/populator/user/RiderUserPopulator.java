@@ -29,12 +29,15 @@ public class RiderUserPopulator extends AbstractDataPopulator<RiderUserDto, Ride
         target.setFirstName(source.getFirstName());
         target.setLastName(source.getLastName());
         target.setEmail(source.getEmail());
-        target.setTelephoneNumber(source.getPhone());
+        target.setPhoneCode(source.getPhoneCode());
+        target.setPhone(source.getPhone());
         target.setStatus(UserStatus.ACTIVE);
         target.setUserType(UserType.RIDER);
         if (StringUtils.isNotEmpty(source.getDateOfBirth())) {
             target.setDateOfBirth(TvdgAppDateUtils.formatStringToDate(source.getDateOfBirth(), DateConstants.DATE_INPUT_FORMAT));
         }
+        target.setEnableOtp(true);
+        target.setEmployeeId(source.getEmployeeId());
         return target;
     }
 

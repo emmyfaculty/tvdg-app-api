@@ -1,8 +1,12 @@
 package com.tvdgapp.controllers.shipment;
 
 import com.tvdgapp.apiresponse.ApiDataResponse;
+import com.tvdgapp.dtos.DhlShipmentResponse;
+import com.tvdgapp.dtos.dhl.ShippingRequestDto;
+import com.tvdgapp.dtos.dhltrackingresponse.DhlShipmentTrackingResponse;
 import com.tvdgapp.dtos.shipment.*;
-import com.tvdgapp.models.shipment.ShipmentStatus;
+import com.tvdgapp.services.DhlApiService;
+import com.tvdgapp.services.DhlTrackingService;
 import com.tvdgapp.services.shipment.international.ShipmentService;
 import com.tvdgapp.utils.ApiResponseUtils;
 import jakarta.validation.Valid;
@@ -13,8 +17,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,6 +28,9 @@ import java.util.List;
 public class ShipmentController {
 
     private final ShipmentService shipmentService;
+    private final DhlApiService dhlApiService;
+    private final DhlTrackingService dhlTrackingService;
+
 
     @PostMapping
 //        @PreAuthorize("hasAuthority({'customerShipmentManagement'})")
@@ -38,8 +47,9 @@ public class ShipmentController {
 
     @PostMapping("/{shipmentId}/status")
     @PreAuthorize("hasAuthority({'adminShipmentManagement'})")
-    public ResponseEntity<ApiDataResponse<Object>> updateShipmentStatusById(@PathVariable Long shipmentId, @RequestParam  String status) {
-        shipmentService.updateShipmentStatusById(shipmentId, status);
+    public ResponseEntity<ApiDataResponse<Object>> updateShipmentStatusById(@PathVariable Long shipmentId,
+                                                                            @RequestBody ShipmentStatusUpdateRequestDto requestDto) {
+        shipmentService.updateShipmentStatusById(shipmentId, requestDto);
         return ApiResponseUtils.response(HttpStatus.OK, "Resources updated successfully");
     }
 //    @PutMapping("/{id}/status")
@@ -154,6 +164,34 @@ public class ShipmentController {
     public ResponseEntity<ApiDataResponse<List<InternationalShipmentResponseDto>>> getShipmentsWithNullCustomerId() {
         List<InternationalShipmentResponseDto> shipments = shipmentService.getShipmentsWithNullCustomerId();
         return ApiResponseUtils.response(HttpStatus.OK, shipments, "Resources retrieved successfully");
+    }
+
+    @PostMapping("/create-shipment")
+    public ResponseEntity<ApiDataResponse<DhlShipmentResponse>> createShipment(@RequestBody ShippingRequestDto shipmentRequest) throws Exception {
+//        try {
+            // Send the request to DHL API and get the response
+            DhlShipmentResponse dhlApiResponse = dhlApiService.sendShipmentRequest(shipmentRequest);
+            return ApiResponseUtils.response(HttpStatus.OK, dhlApiResponse, "Shipment created successfully");
+//        } catch (Exception e) {
+//            return ApiResponseUtils.response(HttpStatus.INTERNAL_SERVER_ERROR, null, "Failed to create shipment: " + e.getMessage());
+//        }
+    }
+
+    @GetMapping("/{trackingNumber}/tracking")
+    public ResponseEntity<ApiDataResponse< DhlShipmentTrackingResponse>> trackShipment(@PathVariable String trackingNumber,
+                                                                                       @RequestParam(value = "trackingView", defaultValue = "all-checkpoints") String trackingView,
+                                                                                       @RequestParam(value = "levelOfDetail", defaultValue = "all") String levelOfDetail)
+            throws IOException, InterruptedException {
+        DhlShipmentTrackingResponse trackingResponse = dhlTrackingService.trackShipment(trackingNumber, trackingView, levelOfDetail);
+        return ApiResponseUtils.response(HttpStatus.OK, trackingResponse);
+    }
+
+    @GetMapping("/{trackingNumber}/track-async")
+    public ResponseEntity<ApiDataResponse<CompletableFuture<DhlShipmentTrackingResponse>>> trackShipmentAsync(@PathVariable String trackingNumber,
+                                                                                                              @RequestParam(value = "trackingView", defaultValue = "all-checkpoints") String trackingView,
+                                                                                                              @RequestParam(value = "levelOfDetail", defaultValue = "all") String levelOfDetail) {
+        CompletableFuture<DhlShipmentTrackingResponse> trackingResponse = dhlTrackingService.trackShipmentAsync(trackingNumber, trackingView, levelOfDetail);
+        return ApiResponseUtils.response(HttpStatus.OK, trackingResponse);
     }
 
 }

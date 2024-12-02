@@ -12,7 +12,6 @@ import com.tvdgapp.mapper.ShipmentMapper;
 import com.tvdgapp.models.commissionrate.CommissionRate;
 import com.tvdgapp.models.shipment.SenderDetails;
 import com.tvdgapp.models.shipment.Shipment;
-import com.tvdgapp.models.shipment.ShipmentStatus;
 import com.tvdgapp.models.user.Role;
 import com.tvdgapp.models.user.User;
 import com.tvdgapp.models.user.UserStatus;
@@ -97,19 +96,35 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
     @Override
     @Transactional
     public AffiliateUser createAffiliateUser(AffiliateUserDto requestDto) {
+        try {
 
             // Check if the email is already taken
             if (this.userEmailTaken(requestDto.getEmail())) {
-                throw new DuplicateEntityException(AFFILIATE_USER, requestDto.getEmail());
+                throw new DuplicateEntityException(AFFILIATE_USER.name(), "email", requestDto.getEmail());
             }
+
             // Check if the username is already taken
             if (this.usernameTaken(requestDto.getUsername())) {
-                throw new DuplicateEntityException("The username already exist", requestDto.getUsername());
+                throw new DuplicateEntityException(AFFILIATE_USER.name(), "username", requestDto.getUsername());
             }
+
             // Check if the identificationNumber is already taken
             if (this.identificationNumberTaken(requestDto.getIdentificationNumber())) {
-                throw new DuplicateEntityException("Identification number already exist,", requestDto.getIdentificationType());
+                throw new DuplicateEntityException(AFFILIATE_USER.name(), "identificationNumber", requestDto.getIdentificationNumber());
             }
+
+//            // Check if the email is already taken
+//            if (this.userEmailTaken(requestDto.getEmail())) {
+//                throw new DuplicateEntityException(AFFILIATE_USER, requestDto.getEmail());
+//            }
+//            // Check if the username is already taken
+//            if (this.usernameTaken(requestDto.getUsername())) {
+//                throw new DuplicateEntityException("The username already exist", requestDto.getUsername());
+//            }
+//            // Check if the identificationNumber is already taken
+//            if (this.identificationNumberTaken(requestDto.getIdentificationNumber())) {
+//                throw new DuplicateEntityException("Identification number already exist,", requestDto.getIdentificationType());
+//            }
 
             // Create the AffiliateUser entity
             AffiliateUser user = this.createAffiliateUserModelEntity(requestDto);
@@ -126,13 +141,22 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
             user = this.saveAffiliateUser(user);
 
             // Create a wallet for the user
-            this.walletService.createWalletForUser(user.getId(), requestDto.getCurrency());
+            this.walletService.createWalletForUser(user.getId());
 
             // Send verification email and notify admin
             this.sendPendingAffiliateUserVerificationEmail(user, password, requestDto.getLoginUrl());
             this.notifyAdminOfNewAffiliateUser(user);
 
             return user;
+
+        } catch (DataIntegrityViolationException e) {
+            // Handle the specific duplicate entry exception
+            if (e.getMessage().contains("UK_6dotkott2kjsp8vw4d0m25fb7")) {
+                throw new DuplicateEntityException(AFFILIATE_USER.name(), "email", requestDto.getEmail());
+            }
+            throw e; // rethrow other exceptions
+        }
+
     }
 
     private String createUserPassword(User user, AffiliateUserDto affiliateUserDto) {
@@ -166,6 +190,8 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
         AffiliateUser user = repository.findById(userId)
                 .orElseThrow(() -> new TvdgException.EntityNotFoundException("AffiliateUser Not found"));
         user.setStatus(UserStatus.ACTIVE);
+        // Generate the referral code now that the account is approved
+        user.setReferralCode(CodeGeneratorUtils.generateReferralCode());
         user = repository.save(user);
 
         // Send notification email to the user
@@ -404,7 +430,8 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
         affiliateUserDetailDto.setEmail(affiliateUser.getEmail());
         affiliateUserDetailDto.setFirstName(affiliateUser.getFirstName());
         affiliateUserDetailDto.setLastName(affiliateUser.getLastName());
-        affiliateUserDetailDto.setPhone(affiliateUser.getTelephoneNumber());
+        affiliateUserDetailDto.setPhone(affiliateUser.getPhone());
+        affiliateUserDetailDto.setPhoneCode(affiliateUser.getPhoneCode());
         affiliateUserDetailDto.setDateOfBirth(String.valueOf(affiliateUser.getDateOfBirth()));
         affiliateUserDetailDto.setPostalCode(affiliateUser.getPostalCode());
         affiliateUserDetailDto.setCity(affiliateUser.getCity());
@@ -442,7 +469,7 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
         dto.setEmail(user.getEmail());
-        dto.setPhone(user.getTelephoneNumber());
+        dto.setPhone(user.getPhone());
         dto.setStatus(user.getStatus().name());
         dto.setUsername(user.getUsername());
         dto.setStreetAddress(user.getStreetAddress());
@@ -565,6 +592,8 @@ public class AffiliateUserServiceImpl extends TvdgEntityServiceImpl<Long, Affili
         AffiliateUser affiliateUser = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Affiliate not found with id: " + id));
         affiliateUser.setStatus(UserStatus.APPROVED);
+        // Generate the referral code now that the account is approved
+        affiliateUser.setReferralCode(CodeGeneratorUtils.generateReferralCode());
         repository.save(affiliateUser);
         logger.info("Affiliate approved with id: {}", id);
         return affiliateUser;

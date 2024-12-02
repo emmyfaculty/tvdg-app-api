@@ -15,7 +15,7 @@ public interface ShipmentService extends TvdgEntityService<Long, Shipment> {
 
     public InternationalShipmentResponseDto createShipment(ShipmentRequestDto request, MultipartFile paymentProof);
 
-    void updateShipmentStatusById(Long id, String status);
+    void updateShipmentStatusById(Long id, ShipmentStatusUpdateRequestDto requestDto);
 
     public InternationalShipmentResponseDto createShippingRate(ShippingRateRequestDto request);
 

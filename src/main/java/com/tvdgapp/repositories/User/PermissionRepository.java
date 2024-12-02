@@ -15,7 +15,7 @@ public interface PermissionRepository  extends JpaRepository<Permission,Integer>
 
     Collection<Permission> findByPermissionIn(Collection<String> names);
 
-    Collection<Permission> findAllByPermissionType(PermissionType permissionType);
+//    Collection<Permission> findAllByPermissionType(PermissionType permissionType);
 
     @Query("SELECT p FROM Permission p JOIN FETCH p.roles WHERE p.id = :id")
     Optional<Permission> findByIdWithRoles(@Param("id") Integer id);

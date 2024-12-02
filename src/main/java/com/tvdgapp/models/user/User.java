@@ -1,6 +1,5 @@
 package com.tvdgapp.models.user;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tvdgapp.constants.SchemaConstant;
 import com.tvdgapp.models.common.audit.AuditListener;
 import com.tvdgapp.models.common.audit.AuditSection;
@@ -16,8 +15,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -81,7 +78,10 @@ public class User extends TvdgAppEntity<Long, User> implements Auditable {
 
     @Column(length = SchemaConstant.PHONE_NO_COL_SIZE)
     @Nullable
-    private String telephoneNumber;
+    private String phone;
+    @Column(length = SchemaConstant.PHONE_CODE_NO_COL_SIZE)
+    @Nullable
+    private String phoneCode;
 
     @Enumerated(EnumType.STRING)
 //    @Index(name = "idx_status")//todo: make non-nullable
@@ -102,6 +102,9 @@ public class User extends TvdgAppEntity<Long, User> implements Auditable {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @Column(name = "enable_otp")
+    private boolean enableOtp;
 
     public void addRole(Role role) {
         roles.add(role);

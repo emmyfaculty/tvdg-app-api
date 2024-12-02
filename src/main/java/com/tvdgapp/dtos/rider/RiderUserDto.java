@@ -38,5 +38,5 @@ public class RiderUserDto extends UserDto {
     @ExcelColumn(name = "Date Of Birth", col = 8,errMsg = "Invalid Date Of Birth- {val},expected format ["+DateConstants.DATE_INPUT_FORMAT+"]")
     protected String dateOfBirth;
     protected  String loginUrl;
-
+    protected String employeeId;
 }

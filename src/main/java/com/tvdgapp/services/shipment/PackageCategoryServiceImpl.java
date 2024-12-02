@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static com.tvdgapp.exceptions.EntityType.ADMIN_USER;
+import static com.tvdgapp.exceptions.EntityType.CATEGORY;
+
 @Service
 public class PackageCategoryServiceImpl extends TvdgEntityServiceImpl<Long, PackageCategory> implements PackageCategoryService {
 
@@ -36,7 +39,8 @@ public class PackageCategoryServiceImpl extends TvdgEntityServiceImpl<Long, Pack
 
         // Check if category name already exists
         if (packageCategoryRepository.existsByCategoryName(packageCategoryDto.getCategoryName())) {
-            throw new DuplicateEntityException("Category name already exists");
+//            throw new DuplicateEntityException("Category name already exists");
+            throw new DuplicateEntityException(CATEGORY.name(), "email", packageCategoryDto.getCategoryName());
         }
 
         PackageCategory packageCategory = new PackageCategory();

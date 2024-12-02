@@ -334,7 +334,7 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
             }
         } else {
             // Handle guest users (not authenticated)
-            target.setPricingLevelId(null); // Set a default or guest PricingLevelId if necessary
+            target.setPricingLevelId(1); // Set a default or guest PricingLevelId if necessary
         }
 
         target.setTotalNumberOfPackages(source.getTotalNumberOfPackages());
@@ -379,10 +379,18 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
         target.setPackagingFee(BigDecimal.valueOf(packagingFee));
 
         // Calculate total shipment amount
-        Set<ProductItem> productItems = new HashSet<>();
+// Initialize totalCategoryDocumentAmount to zero
         BigDecimal totalCategoryDocumentAmount = BigDecimal.valueOf(0.0);
 
+// Create an empty set to hold product items
+        Set<ProductItem> productItems = new HashSet<>();
+
+// Create a set to keep track of added category names
+        Set<String> addedCategoryNames = new HashSet<>();
+
+// Iterate through each ProductItemDto in the source
         for (ProductItemDto itemDto : source.getProductItems()) {
+            // Create a new ProductItem and set its properties
             ProductItem productItem = new ProductItem();
             productItem.setDescription(itemDto.getDescription());
             productItem.setQuantity(itemDto.getQuantity());
@@ -391,17 +399,27 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
             productItem.setWeight(itemDto.getWeight());
             productItem.setManufacturingCountry(itemDto.getManufacturingCountry());
 
+            // Find the PackageCategory by its name
             PackageCategory packageCategory = packageCategoryRepository.findByCategoryName(itemDto.getPackageCategoryName())
                     .orElseThrow(() -> new IllegalArgumentException("Package category not found"));
-            productItem.setPackageCategory(packageCategory);
-            totalCategoryDocumentAmount.add(packageCategory.getCategoryAmount());
 
-            // Set the shipment reference
+            // Set the PackageCategory for the ProductItem
+            productItem.setPackageCategory(packageCategory);
+
+            // Only add the CategoryAmount if the category name hasn't been added yet
+            if (!addedCategoryNames.contains(itemDto.getPackageCategoryName())) {
+                totalCategoryDocumentAmount = totalCategoryDocumentAmount.add(packageCategory.getCategoryAmount());
+                addedCategoryNames.add(itemDto.getPackageCategoryName());
+            }
+
+            // Set the shipment reference on the ProductItem
             productItem.setShipment(target);
 
+            // Add the ProductItem to the set
             productItems.add(productItem);
         }
         target.setProductItems(productItems);
+        target.setDocumentCharge(totalCategoryDocumentAmount);
 
         ShippingService shippingService = shippingServiceRepository.findById(source.getServiceId())
                 .orElseThrow(() -> new TvdgException.EntityNotFoundException("shippingService not found"));
@@ -420,8 +438,8 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
 
         // Calculate the base cost
         double convertedWeightToUse = convertWeightToKg(weightToUse, String.valueOf(source.getUnits()));
-        double baseCost = calculateBaseCost(priceModelLevel, convertedWeightToUse);
-        target.setTransportCharge(BigDecimal.valueOf(baseCost));
+        BigDecimal baseCost = calculateBaseCost(priceModelLevel, convertedWeightToUse);
+        target.setTransportCharge(baseCost);
         BigDecimal pickupFee = BigDecimal.valueOf(0.0);
         if (source.getPickup().name().equals("YES")) {
             logger.info("Pickup is true, checking conditions for pickup fee");
@@ -464,9 +482,10 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
             target.setPickupFee(BigDecimal.valueOf(0));
         }
 
-        BigDecimal vat = BigDecimal.valueOf(baseCost * 0.075);
+        BigDecimal vatRate = BigDecimal.valueOf(0.075); // Convert the double to BigDecimal
+        BigDecimal vat = baseCost.multiply(vatRate); // Perform the multiplication
 //        BigDecimal totalShipmentAmount = BigDecimal.valueOf(baseCost + vat + packagingFee + totalCategoryDocumentAmount);
-        BigDecimal totalShipmentAmount = BigDecimal.valueOf(baseCost)
+        BigDecimal totalShipmentAmount = baseCost
                 .add(vat)
                 .add(BigDecimal.valueOf(packagingFee))
                 .add(totalCategoryDocumentAmount)
@@ -579,11 +598,11 @@ public class ShipmentPopulator extends AbstractDataPopulator<ShipmentRequestDto,
         return weight;
     }
 
-    private double calculateBaseCost(PriceModelLevel priceModelLevel, double weightToUse) {
-        if (priceModelLevel.getWeightBandEnd() == null) {
-            return priceModelLevel.getPrice() * weightToUse;
+    private BigDecimal calculateBaseCost(PriceModelLevel priceModelLevel, double weightToUse) {
+        if (priceModelLevel.getWeightTo() == null) {
+            return priceModelLevel.getRate().multiply(BigDecimal.valueOf(weightToUse));
         } else {
-            return priceModelLevel.getPrice();
+            return priceModelLevel.getRate();
         }
     }
 

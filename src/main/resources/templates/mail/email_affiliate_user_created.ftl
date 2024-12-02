@@ -38,16 +38,16 @@
 <p>Dear ${EMAIL_FULLNAME}</p>
 <p>Welcome to the DLE affiliate portal! Your account has been created and is pending verification.
     <br/>You will be notified once your account is verified by the admin.
-    <br/>Your current login information is now:
+<#--    <br/>Your current login information is now:-->
 </p>
-<p>
-    <br> <span class="text-bold">Username:</span><span>${EMAIL_USER_NAME}</span>
-    <br><span class="text-bold">Password:</span><span>${EMAIL_USER_PASSWORD}</span>
-    <br/>Your Affiliate Code:
-    <br><span class="text-bold">Referral Code:</span><span>${EMAIL_USER_REFERRAL_CODE}</span>
-</p>
-<p>To access your DLE Web App account, login at: </p>
-<p><a href="${APP_URL}" target="_blank">${APP_URL}</a></p>
+<#--<p>-->
+<#--    <br> <span class="text-bold">Username:</span><span>${EMAIL_USER_NAME}</span>-->
+<#--    <br><span class="text-bold">Password:</span><span>${EMAIL_USER_PASSWORD}</span>-->
+<#--    <br/>Your Affiliate Code:-->
+<#--    <br><span class="text-bold">Referral Code:</span><span>${EMAIL_USER_REFERRAL_CODE}</span>-->
+<#--</p>-->
+<#--<p>To access your DLE Web App account, login at: </p>-->
+<#--<p><a href="${APP_URL}" target="_blank">${APP_URL}</a></p>-->
 
 <p>Best Regards,</p>
 

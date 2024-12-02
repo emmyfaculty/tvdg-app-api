@@ -53,7 +53,15 @@ public class Role extends TvdgAppEntity<Integer, Role> implements Auditable {
     private Set<User> users = new HashSet<>();
 
     @ManyToMany(cascade = {CascadeType.MERGE })
+    @JoinTable(
+            name = "roles_permissions", // Custom join table name
+            joinColumns = @JoinColumn(name = "role_id"), // Custom column name for Role
+            inverseJoinColumns = @JoinColumn(name = "permission_id") // Custom column name for Permission
+    )
     private Set<Permission> permissions = new HashSet<>();
+
+//    @ManyToMany(cascade = {CascadeType.MERGE })
+//    private Set<Permission> permissions = new HashSet<>();
 
     @Embedded
     private AuditSection auditSection = new AuditSection();

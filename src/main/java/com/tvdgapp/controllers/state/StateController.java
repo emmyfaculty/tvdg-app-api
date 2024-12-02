@@ -1,7 +1,6 @@
 package com.tvdgapp.controllers.state;
 
 import com.tvdgapp.apiresponse.ApiDataResponse;
-import com.tvdgapp.models.reference.countrycode.LocaleCity;
 import com.tvdgapp.models.reference.countrycode.LocaleCountry;
 import com.tvdgapp.models.reference.countrycode.LocaleState;
 import com.tvdgapp.models.reference.countrycode.LocaleStateDto;

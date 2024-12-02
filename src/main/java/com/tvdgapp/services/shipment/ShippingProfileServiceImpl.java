@@ -4,7 +4,7 @@ import com.tvdgapp.dtos.shipment.ShippingProfileDto;
 import com.tvdgapp.dtos.shipment.ShippingProfileRequestDto;
 import com.tvdgapp.exceptions.AuthenticationException;
 import com.tvdgapp.exceptions.ResourceNotFoundException;
-import com.tvdgapp.models.shipment.ShippingProfile;
+import com.tvdgapp.models.shipment.CustomerShippingProfile;
 import com.tvdgapp.models.user.customer.CustomerUser;
 import com.tvdgapp.repositories.User.CustomerUserRepository;
 import com.tvdgapp.repositories.shipment.ShippingProfileRepository;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, ShippingProfile> implements ShippingProfileService {
+public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, CustomerShippingProfile> implements ShippingProfileService {
 
     private static final Logger logger = LoggerFactory.getLogger(ShippingProfileServiceImpl.class);
 
@@ -35,7 +35,7 @@ public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, Ship
 
     @Override
     @Transactional
-    public ShippingProfile createShippingProfile(ShippingProfileRequestDto profileDto) {
+    public CustomerShippingProfile createShippingProfile(ShippingProfileRequestDto profileDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() instanceof UserDetails userDetails) {
             Optional<CustomerUser> customerUserOptional = customerUserRepository.findByEmail(userDetails.getUsername());
@@ -45,22 +45,22 @@ public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, Ship
                     throw new IllegalArgumentException("A shipping profile with similar details already exists.");
                 }
 
-                ShippingProfile shippingProfile = new ShippingProfile();
+                CustomerShippingProfile customerShippingProfile = new CustomerShippingProfile();
                 // Map fields from DTO to entity
-                shippingProfile.setShipmentName(profileDto.getShipmentName());
-                shippingProfile.setShippingMode(profileDto.getShippingMode());
-                shippingProfile.setPickupDays(profileDto.getPickupDays());
-                shippingProfile.setPickupLocation(profileDto.getPickupLocation());
-                shippingProfile.setAverageDailyPackages(profileDto.getAverageDailyPackages());
-                shippingProfile.setAverageDailyWeight(profileDto.getAverageDailyWeight());
-                shippingProfile.setNumberOfMonthlyPackages(profileDto.getNumberOfPackagesPerMonth());
-                shippingProfile.setSubscription(profileDto.getSubscription());
-                shippingProfile.setMonthlyRevenue(profileDto.getMonthlyRevenue());
-                shippingProfile.setServiceInterests(profileDto.getServiceInterests());
-                shippingProfile.setCustomerUser(customerUser);
+                customerShippingProfile.setShipmentName(profileDto.getShipmentName());
+                customerShippingProfile.setShippingMode(profileDto.getShippingMode());
+                customerShippingProfile.setPickupDays(profileDto.getPickupDays());
+                customerShippingProfile.setPickupLocation(profileDto.getPickupLocation());
+                customerShippingProfile.setAverageDailyPackages(profileDto.getAverageDailyPackages());
+                customerShippingProfile.setAverageDailyWeight(profileDto.getAverageDailyWeight());
+                customerShippingProfile.setNumberOfMonthlyPackages(profileDto.getNumberOfPackagesPerMonth());
+                customerShippingProfile.setSubscription(profileDto.getSubscription());
+                customerShippingProfile.setMonthlyRevenue(profileDto.getMonthlyRevenue());
+                customerShippingProfile.setServiceInterests(profileDto.getServiceInterests());
+                customerShippingProfile.setCustomerUser(customerUser);
 
                 logger.info("Creating shipping profile for user: {}", customerUser.getEmail());
-                return shippingProfileRepository.save(shippingProfile);
+                return shippingProfileRepository.save(customerShippingProfile);
             } else {
                 logger.error("Customer user not found");
                 throw new ResourceNotFoundException("Customer user not found");
@@ -74,7 +74,7 @@ public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, Ship
     private boolean isDuplicateProfile(ShippingProfileRequestDto requestDto, Long customerId) {
         // Query the repository to check if a similar profile exists for the customer
         // Example: check by name and shipping mode
-        Optional<ShippingProfile> existingProfile = shippingProfileRepository.findByShipmentNameAndShippingModeAndCustomerUserId(
+        Optional<CustomerShippingProfile> existingProfile = shippingProfileRepository.findByShipmentNameAndShippingModeAndCustomerUserId(
                 requestDto.getShipmentName(), requestDto.getShippingMode(), customerId);
 
         return existingProfile.isPresent();
@@ -82,43 +82,43 @@ public class ShippingProfileServiceImpl extends TvdgEntityServiceImpl<Long, Ship
 
 
 
-    public List<ShippingProfile> listShippingProfiles () {
+    public List<CustomerShippingProfile> listShippingProfiles () {
         return shippingProfileRepository.findAll();
     }
     @Override
     @Transactional
     public List<ShippingProfileDto> getAllShippingProfiles() {
-        List<ShippingProfile> shippingProfiles = shippingProfileRepository.findAll();
+        List<CustomerShippingProfile> customerShippingProfiles = shippingProfileRepository.findAll();
 
-        return shippingProfiles.stream()
+        return customerShippingProfiles.stream()
                 .map(this::mapEntityToDto)
                 .collect(Collectors.toList());
     }
     @Override
     @Transactional
-    public List<ShippingProfile> getShippingProfilesByCustomerUserId(Long customerUserId) {
-        List<ShippingProfile> shippingProfiles = shippingProfileRepository.findByCustomerUser_Id(customerUserId);
+    public List<CustomerShippingProfile> getShippingProfilesByCustomerUserId(Long customerUserId) {
+        List<CustomerShippingProfile> customerShippingProfiles = shippingProfileRepository.findByCustomerUser_Id(customerUserId);
 
         // Initialize lazy-loaded collections or attributes as needed
         // Example of initializing a lazy-loaded collection
-        shippingProfiles.forEach(ShippingProfile::getServiceInterests);
+        customerShippingProfiles.forEach(CustomerShippingProfile::getServiceInterests);
 
-        return shippingProfiles;
+        return customerShippingProfiles;
     }
 
-    private ShippingProfileDto mapEntityToDto(ShippingProfile shippingProfile) {
+    private ShippingProfileDto mapEntityToDto(CustomerShippingProfile customerShippingProfile) {
         ShippingProfileDto dto = new ShippingProfileDto();
-        dto.setId(shippingProfile.getId());
-        dto.setShipmentName(shippingProfile.getShipmentName());
-        dto.setShippingMode(shippingProfile.getShippingMode());
-        dto.setPickupLocation(shippingProfile.getPickupLocation());
-        dto.setPickupDays(shippingProfile.getPickupDays());
-        dto.setAverageDailyPackages(shippingProfile.getAverageDailyPackages());
-        dto.setAverageDailyWeight(shippingProfile.getAverageDailyWeight());
-        dto.setNumberOfPackagesPerMonth(shippingProfile.getNumberOfMonthlyPackages());
-        dto.setSubscription(shippingProfile.getSubscription());
-        dto.setServiceInterests(shippingProfile.getServiceInterests());
-        dto.setMonthlyRevenue(shippingProfile.getMonthlyRevenue());
+        dto.setId(customerShippingProfile.getId());
+        dto.setShipmentName(customerShippingProfile.getShipmentName());
+        dto.setShippingMode(customerShippingProfile.getShippingMode());
+        dto.setPickupLocation(customerShippingProfile.getPickupLocation());
+        dto.setPickupDays(customerShippingProfile.getPickupDays());
+        dto.setAverageDailyPackages(customerShippingProfile.getAverageDailyPackages());
+        dto.setAverageDailyWeight(customerShippingProfile.getAverageDailyWeight());
+        dto.setNumberOfPackagesPerMonth(customerShippingProfile.getNumberOfMonthlyPackages());
+        dto.setSubscription(customerShippingProfile.getSubscription());
+        dto.setServiceInterests(customerShippingProfile.getServiceInterests());
+        dto.setMonthlyRevenue(customerShippingProfile.getMonthlyRevenue());
         return dto;
     }
 

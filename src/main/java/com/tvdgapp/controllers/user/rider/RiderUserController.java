@@ -38,7 +38,7 @@ public class RiderUserController implements IRiderUserController {
 
     @Override
     @PostMapping("/signup")
-    @PreAuthorize("hasAnyAuthority('riderUserManagement', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('User:create', 'ADMIN')")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> createRiderUser(@Valid @RequestBody RiderUserDto riderUserDto) {
         RiderUser riderUser = this.service.createRiderUser(riderUserDto);
         return ApiResponseUtils.response(HttpStatus.CREATED, new IdResponseDto(riderUser.getId()), "Resource created successfully");
@@ -47,7 +47,7 @@ public class RiderUserController implements IRiderUserController {
 
     @GetMapping
 //    @PreAuthorize("hasAnyAuthority('manageAdminUser', 'viewAdminUser','manageMailingList')")
-    @PreAuthorize("hasAuthority('riderUserManagement')")
+    @PreAuthorize("hasAuthority('RiderList')")
     public ResponseEntity<ApiDataResponse<Page<ListRiderUserDto>>> listUsers(Pageable pageable){
         Page<ListRiderUserDto> list = this.service.listUsers(pageable);
         return ApiResponseUtils.response(HttpStatus.OK, list, "Resources retrieved successfully");
@@ -62,7 +62,7 @@ public class RiderUserController implements IRiderUserController {
     }
     @Override
     @GetMapping("/profile")
-    @PreAuthorize("hasAnyAuthority('manageRider', 'RIDER')")
+    @PreAuthorize("hasAnyAuthority('Rider:view', 'RIDER')")
     public ResponseEntity<ApiDataResponse<RiderUserDetailResponseDto>> fetchRiderUserDetail()  {
         SecuredUserInfo userInfo = (SecuredUserInfo) this.userInfoUtil.authenticatedUserInfo();
         RiderUserDetailResponseDto userDetailResponseDto = this.service.fetchRiderUserDetail(userInfo.getUserId());
@@ -70,14 +70,14 @@ public class RiderUserController implements IRiderUserController {
     }
 
     @GetMapping("/fetch")
-    @PreAuthorize("hasAuthority('riderUserManagement')")
+    @PreAuthorize("hasAuthority('RiderList')")
     public ResponseEntity<ApiDataResponse<List<RiderUserResponseDto>>> getAllRiderUsers() {
         List<RiderUserResponseDto> list = this.service.getAllRiderUsers();
         return ApiResponseUtils.response(HttpStatus.OK, list,"Resource retrieved successfully");
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('riderUserManagement')")
+    @PreAuthorize("hasAuthority('Rider:view')")
     public ResponseEntity<ApiDataResponse<Optional<RiderUserResponseDto>>> getRiderUserById(@PathVariable Long id) {
         return ApiResponseUtils.response(HttpStatus.OK, this.service.getRiderUserById(id), "Resource successfully retrieved");
 
@@ -85,14 +85,14 @@ public class RiderUserController implements IRiderUserController {
 
     @Override
     @PutMapping("/profile")
-    @PreAuthorize("hasAnyAuthority('manageRider', 'RIDER')")
+    @PreAuthorize("hasAnyAuthority('Rider:update', 'RIDER')")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> updateRiderUserProfile(@Valid @RequestBody UpdateRiderUserDetailDto riderUserDto) {
         var devUserInfo = (SecuredUserInfo) this.userInfoUtil.authenticatedUserInfo();
         this.service.updateRiderUser(devUserInfo.getUser().getId(), riderUserDto);
         return ApiResponseUtils.response(HttpStatus.OK, "Resource updated successfully");
     }
     @PutMapping("/profile/{userId}")
-    @PreAuthorize("hasAuthority('riderUserManagement')")
+    @PreAuthorize("hasAuthority('Rider:update')")
     public ResponseEntity<ApiDataResponse<IdResponseDto>> updateRiderUserProfileById(@PathVariable Long userId, @Valid @RequestBody UpdateRiderUserDetailDto riderUserDto) {
         this.service.updateRiderUser(userId, riderUserDto);
         return ApiResponseUtils.response(HttpStatus.OK, "Resource updated successfully");
@@ -100,7 +100,7 @@ public class RiderUserController implements IRiderUserController {
 
     @Override
     @PutMapping("/profilePic")
-    @PreAuthorize("hasAnyAuthority('manageRider', 'RIDER')")
+    @PreAuthorize("hasAnyAuthority('Rider:update', 'RIDER')")
     public ResponseEntity<ApiDataResponse<FileUrlDto>> updateProfilePic(@RequestPart(value = "profile_pic_upload") MultipartFile profileFileUpload) {
         validateProfilePicUpload(profileFileUpload);
         SecuredUserInfo userInfo = (SecuredUserInfo) this.userInfoUtil.authenticatedUserInfo();
@@ -110,7 +110,7 @@ public class RiderUserController implements IRiderUserController {
     }
     @Override
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAuthority('riderUserManagement')")
+    @PreAuthorize("hasAuthority('Rider:delete')")
     public ResponseEntity<ApiDataResponse<String>> deleteUser(@PathVariable Long userId) throws Exception {
         this.service.deleteRiderUserById(userId);
         return ApiResponseUtils.response(HttpStatus.NO_CONTENT, "Resource deleted successfully");

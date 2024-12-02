@@ -22,7 +22,7 @@ public interface PermissionService  extends TvdgEntityService<Integer, Permissio
 
     Collection<Permission> findByPermissionIn(Collection<String> names);
 
-    Collection<Permission> fetchPermissions(PermissionType permissionType);
+//    Collection<Permission> fetchPermissions(PermissionType permissionType);
 
     Collection<ListPermissionDto> listPermissions();
     Collection<String> listPermissions(String email);
